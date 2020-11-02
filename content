@@ -1,0 +1,19 @@
+1 Example C++ memory safety example (CWE top 25)
+2 Origin of Rust (mozilla 2015, servo & multithreaded firefox)
+3 Linear typesystem, ownership, borrowing (scope, lifetime)
+4 Enums
+5 Error handling (return types vs. C++ exception)
+6  Polymorphism (Generics, traits and trait objects)
+7 Concurrency (send&sync, Arcs, mutex)
+8 Macros
+9  Unsafe
+10 Modules
+11 Std::lib
+12 Cargo
+13 Integrated test & benchmark
+14 Releases (editions)
+
+We explain syntax at each example
+
+
+1
