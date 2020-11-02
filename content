@@ -16,4 +16,26 @@
 We explain syntax at each example
 
 
-1
+1. Example C++ memory safety
+
+#include<iostream>
+#include<vector>
+#include<string>
+
+int main(int argc, char *argv[])
+{
+        std::vector<std::string> strings;
+        strings.push_back("Hello");
+
+        std::string& ref = strings[0];
+        strings.push_back("World");
+
+        std::cout << ref << std::endl;
+        return 0;
+}
+
+Will this work? Well likely yes, but what happens if the vector is nearing its capacity? In some cases the vector will allocate new memory to enlarge and move its elements to this newly allocated block. The problem is that the reference 'ref' is then pointing into unused memory. This opens the door for segmentation faults or information leaking.
+
+The CWE website tracks common weaknesses in software development (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The top 25 shows numerous issues that may arise in software where memory management is not done properly. An internal investigation at Microsoft also showed that about 70% of the security bugs are related to memory management (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The Chromium project reports the same figures for their Chrome derived browser ( https://www.chromium.org/Home/chromium-security/memory-safety).
+
+This seems to show that even with good engineers working on the code, it is still difficult to prevent these types of errors from happening. 
