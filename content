@@ -15,6 +15,13 @@
 
 We explain syntax at each example
 
+0.
+
+My name is Micha Hergarden and I am part of the SICS team at EUV source. I have a background in Software Engineering with about 20 years of experience. I came into contact with Rust at the 2015 Fosdem software conference and got to use it for my thesis in 2018.
+
+... intro Erdem ...
+
+Our aim for tonight is to give you a short tour of the Rust programming language and to show in what aspects it differs from its cousins c and c++.
 
 1. Example C++ memory safety
 
@@ -36,6 +43,14 @@ int main(int argc, char *argv[])
 
 Will this work? Well likely yes, but what happens if the vector is nearing its capacity? In some cases the vector will allocate new memory to enlarge and move its elements to this newly allocated block. The problem is that the reference 'ref' is then pointing into unused memory. This opens the door for segmentation faults or information leaking.
 
-The CWE website tracks common weaknesses in software development (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The top 25 shows numerous issues that may arise in software where memory management is not done properly. An internal investigation at Microsoft also showed that about 70% of the security bugs are related to memory management (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The Chromium project reports the same figures for their Chrome derived browser ( https://www.chromium.org/Home/chromium-security/memory-safety).
+The CWE website tracks common weaknesses in software development (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The top 25 shows numerous issues that may arise in software where memory management is not done properly. An internal investigation at Microsoft also showed that about 70% of the security bugs found in their products are related to memory management (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The Chromium project reports the same figures for their Chrome derived browser ( https://www.chromium.org/Home/chromium-security/memory-safety).
 
-This seems to show that even with good engineers working on the code, it is still difficult to prevent these types of errors from happening. 
+This seems to suggest that even with good engineers working on the code, it is still difficult to prevent these types of errors from occuring. A common denominator for these issues is the use of languages like C or C++. These languages offer runtime efficiency and low level control, but have the trade off of requiring rigorous testing and code checking to make sure no unintended issues are introduced. In contrast, languages with a garbage collector offer better protection from these types of issues but have the trade off of lacking the low level control needed in certain application domains. Enter Rust...
+
+2. Origin of Rust
+
+In 2006 a Mozilla Research employee named Graydon Hoare started the Rust language project as a means to design a language that provides better memory safety guarantees while still offering the low level control that c and c++ offer. Mozilla started sponsoring the project in 2009 and announced it in 2010. The first major release of the language was in 2015. Initially the language was used for the Servo browser project. Servo was developed in cooperation with Samsung as a means to explore the concurrency and memory safety properties of Rust in order to create a parallelized web browser. The CSS style engine has already found its way into the Firefox browser.
+
+Rust gained popularity outside of Mozilla and has earned the honour of being the "most loved programming language" on the Stack Overflow developer survey since 2016. The industry also started adopting the language and according to the project page around 148 companies are using Rust in production code. Microsoft and Google have shown serious interest and researched the language for use in security critical components.
+
+3. Linear typesystem, ownership, borrowing and lifetimes.
