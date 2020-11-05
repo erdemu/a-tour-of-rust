@@ -3,7 +3,7 @@
 3 Linear typesystem, ownership, borrowing (scope, lifetime)
 4 Enums
 5 Error handling (return types vs. C++ exception)
-6  Polymorphism (Generics, traits and trait objects)
+6 Polymorphism (Generics, traits and trait objects)
 7 Concurrency (send&sync, Arcs, mutex)
 8 Macros
 9  Unsafe
@@ -17,9 +17,9 @@ We explain syntax at each example
 
 0.
 
-My name is Micha Hergarden and I am part of the SICS team at EUV source. I have a background in Software Engineering with about 20 years of experience. I came into contact with Rust at the 2015 Fosdem software conference and got to use it for my thesis in 2018.
-
 ... intro Erdem ...
+
+My name is Micha Hergarden and I am part of the SICS team at EUV source. I have a background in Software Engineering with about 20 years of experience. I came into contact with Rust at the 2015 Fosdem software conference and got to use it for my thesis in 2018.
 
 Our aim for tonight is to give you a short tour of the Rust programming language and to show in what aspects it differs from its cousins c and c++.
 
@@ -45,7 +45,7 @@ Will this work? Well likely yes, but what happens if the vector is nearing its c
 
 The CWE website tracks common weaknesses in software development (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The top 25 shows numerous issues that may arise in software where memory management is not done properly. An internal investigation at Microsoft also showed that about 70% of the security bugs found in their products are related to memory management (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The Chromium project reports the same figures for their Chrome derived browser ( https://www.chromium.org/Home/chromium-security/memory-safety).
 
-This seems to suggest that even with good engineers working on the code, it is still difficult to prevent these types of errors from occuring. A common denominator for these issues is the use of languages like C or C++. These languages offer runtime efficiency and low level control, but have the trade off of requiring rigorous testing and code checking to make sure no unintended issues are introduced. In contrast, languages with a garbage collector offer better protection from these types of issues but have the trade off of lacking the low level control needed in certain application domains. Enter Rust...
+This seems to suggest that even with good engineers working on the code, it is still difficult to prevent these types of errors from occuring. A common denominator for these issues is the use of languages like C or C++. These languages offer runtime efficiency and low level control, but have the trade off of requiring rigorous testing and code checking to make sure no unintended issues are introduced. In contrast, languages with a garbage collector offer better protection from some of these types of issues but have the trade off of lacking the low level control needed in certain application domains, i.e. realtime systems. Enter Rust...
 
 2. Origin of Rust
 
@@ -53,4 +53,24 @@ In 2006 a Mozilla Research employee named Graydon Hoare started the Rust languag
 
 Rust gained popularity outside of Mozilla and has earned the honour of being the "most loved programming language" on the Stack Overflow developer survey since 2016. The industry also started adopting the language and according to the project page around 148 companies are using Rust in production code. Microsoft and Google have shown serious interest and researched the language for use in security critical components.
 
-3. Linear typesystem, ownership, borrowing and lifetimes.
+3. Linear typesystem, ownership, borrowing and lifetimes. (take image from thesis)
+
+The main property that differentiates Rust from languages like C and C++ is its typesystem. This system is known as a linear typesystem. The book 'Advanced topics in Types and Programming Languages' by Benjamin Pierce defines a linear typesystem as follows:
+
+"Linear type systems ensure that every variable is used exactly once by allowing exchange but not weakening or contraction."
+
+The key words here are 'used exactly once'. In this context this means that data in a certain memory region representing an object can be associated with one name only. To clarify this further I will explain this in terms of a c++ string object. In c++ a string is represented by two structures. First a structure that is associated with the string variable name. This structure contains a pointer to the second structure, a length and a capacity. The length is the number of characters in the string data, and the capacity is the maximum number of characters that can be held in the string data. The pointer points to the actual characters that make up the string and are stored in the heap.
+
+In c++ you can make a shallow copy, meaning that you create a copy of the first struct and associate that with a different name. The pointer to the heap data is identical to the first string object. The advantage of that is that you do not need to copy a potentially large amount of heap data. The drawback is that the administration in both variables need to be kept in sync. In a linear typesystem, this is considered double use and thus prohibited. When a new variable is associated with the data, the initial struct is marked 'invalid'. Any attempt to access the data via the first variable will result in a compile time error. This concept is called 'Ownership' and can be compared to a person owning a physical object like a book.
+
+To summarize: at any given time, a value must have an owner and can have only one owner. When the owner is destroyed, the value is also destroyed.
+
+In Rust it is possible to associate a second variable name to the string by means of a reference. The reference contains then a pointer to the first variable, which in turn points to the actual string data. This referencing mechanism is called 'Borrowing' and can be compared to a person lending a book to a friend. The friend may read the book, as long as the book is returned to the owner in due time. By default, a reference is immutable. Any attempt to modify the value through a reference will lead to a compile time error. A refence can explicitly be made mutable, but then there can only be a single reference.
+
+To summarize: at any given time there may be many immutable references to a value or a single mutable reference. A reference must always be valid.
+
+Let's view this in a piece of Rust code.
+
+4. Enums
+
+5. Error Handling 
