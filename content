@@ -71,6 +71,97 @@ To summarize: at any given time there may be many immutable references to a valu
 
 Let's view this in a piece of Rust code.
 
+In the first example we pass a string value to a function that will uppercase it internally. The function takes the string by value and therefore the ownership of the string is transferred to the function (or rather the variable name in the argument). 
+
+fn uppercase(input: String) {
+    input.to_uppercase();
+}
+
+fn main() {
+    let output = String::from("hello world.");
+    uppercase(output);
+}
+
+Any attempt to refer to the string after calling the function will result in a compilation error:
+
+fn uppercase(input: String) {
+    input.to_uppercase();
+}
+
+fn main() {
+    let output = String::from("hello world.");
+    uppercase(output);
+    //print!("{}", output);
+}
+
+The output from the compiler is:
+
+micha@linux-gvwr:~/asml-tour-of-rust/ownership (main)> cargo run
+   Compiling ownership v0.1.0 (/home/micha/asml-tour-of-rust/ownership)
+error[E0382]: borrow of moved value: `output`
+ --> src/main.rs:8:18
+  |
+6 |     let output = String::from("hello world.");
+  |         ------ move occurs because `output` has type `std::string::String`, which does not implement the `Copy` trait
+7 |     uppercase(output);
+  |               ------ value moved here
+8 |     print!("{}", output);
+  |                  ^^^^^^ value borrowed here after move
+
+error: aborting due to previous error
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `ownership`.
+
+To learn more, run the command again with --verbose.
+
+When we pass the same string by reference, the ownership is not transferred but the function is able to borrow the string. The main function can still use the string after the function returns:
+
+fn uppercase(input: &String) {
+    input.to_uppercase();
+}
+
+fn main() {
+    let output = String::from("hello world.");
+    uppercase(&output);
+    print!("{}", output);
+}
+
 4. Enums
 
-5. Error Handling 
+5. Error Handling (Don't panic!)
+
+
+Rust divides error handling in two categories: non-recoverable and recoverable. A non-recoverable error is an condition in the program that should never happen and is cause for the program to end prematurely. In Rust such an error is called a 'panic'. In the event of a panic, the program halts and a default handler is called. Rust will start unwinding the stack and print out a stacktrace for further analysis. 
+
+An example of such a situation happens for instance when we explicitly call the panic macro:
+fn do_something() {
+    panic!("Oh noes!");
+}
+
+fn main() {
+    do_something();
+}
+
+micha@linux-gvwr:~/asml-tour-of-rust/panic (main)> cargo run
+   Compiling panic v0.1.0 (/home/micha/asml-tour-of-rust/panic)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.23s
+     Running `target/debug/panic`
+thread 'main' panicked at 'Oh noes!', src/main.rs:2:5
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+When the program us run with the RUST_BACKTRACE variable set, we will see a full backtrace, including the panic handler itself. In a lot of cases, the output from the less verbose panic is clear enough to deduce what caused the program to terminate. And when the panic macro is used, the programmer often provides an explicit error message to be printed out.
+
+Rust has two enum types to denote error conditions:
+
+enum Result<T,E> {
+	Ok(T),
+	Err(E),
+}
+
+enum Option<T> {
+	Some(T),
+	None
+}
+
+
