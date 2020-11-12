@@ -32,16 +32,19 @@ Our aim for tonight is to give you a short tour of the Rust programming language
 int main(int argc, char *argv[])
 {
         std::vector<std::string> strings;
+
         strings.push_back("Hello");
+        strings.push_back("World");
 
         std::string& ref = strings[0];
-        strings.push_back("World");
+
+	add_more_strings(&strings);
 
         std::cout << ref << std::endl;
         return 0;
 }
 
-Will this work? Well likely yes, but what happens if the vector is nearing its capacity? In some cases the vector will allocate new memory to enlarge and move its elements to this newly allocated block. The problem is that the reference 'ref' is then pointing into unused memory. This opens the door for segmentation faults or information leaking.
+Will this work? The answer is: maybe. In some cases the vector will allocate new memory to enlarge and move its elements to this newly allocated block. The problem is that the reference 'ref' is then pointing into unused memory. This opens the door for segmentation faults or information leaking.
 
 The CWE website tracks common weaknesses in software development (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The top 25 shows numerous issues that may arise in software where memory management is not done properly. An internal investigation at Microsoft also showed that about 70% of the security bugs found in their products are related to memory management (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The Chromium project reports the same figures for their Chrome derived browser ( https://www.chromium.org/Home/chromium-security/memory-safety).
 
@@ -127,14 +130,17 @@ fn main() {
     print!("{}", output);
 }
 
+A nice consequence of using linear types is that there is no need for a garbage collector. The compiler can deduce which variable a value belongs to and what the scope of that variable is. In Rust this scope is called the Lifetime of a variable. The absence of a garbage collector lets Rust enter the domain of languages like c and c++ and this is why it is often touted as a system programming language.
+
 4. Enums
+
+----- ERDEM ----------
 
 5. Error Handling (Don't panic!)
 
+Rust divides error handling in two categories: non-recoverable and recoverable. A non-recoverable error is an condition in the program that should never happen and is cause for the program to end prematurely. An example of that would be a division by zero as that leads to an undefined result. In Rust such an error is called a 'panic'. In the event of a panic, the program halts and a default handler is called. Rust will start unwinding the stack and print out a stacktrace for further analysis. One thing to note is that a panic will stay within the boundaries of a thread. So if one thread panics, it does not mean that your whole program will crash. Instead, the thread will abort and the parent thread will be able to retrieve a thread result. In this case the result will be an error. This makes for more robust programs and allows the program to continue the other threads.
 
-Rust divides error handling in two categories: non-recoverable and recoverable. A non-recoverable error is an condition in the program that should never happen and is cause for the program to end prematurely. In Rust such an error is called a 'panic'. In the event of a panic, the program halts and a default handler is called. Rust will start unwinding the stack and print out a stacktrace for further analysis. 
-
-An example of such a situation happens for instance when we explicitly call the panic macro:
+An example of a panic situation happens for instance when we explicitly call the panic macro:
 fn do_something() {
     panic!("Oh noes!");
 }
@@ -152,6 +158,8 @@ note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 When the program us run with the RUST_BACKTRACE variable set, we will see a full backtrace, including the panic handler itself. In a lot of cases, the output from the less verbose panic is clear enough to deduce what caused the program to terminate. And when the panic macro is used, the programmer often provides an explicit error message to be printed out.
 
+Let's move on to recoverable errors. The Rust language does not have an exception mechanism. Instead it relies on return values. The advantage of using these values is that the caller must do something with them. It is not possible to ignore the error by accident.
+
 Rust has two enum types to denote error conditions:
 
 enum Result<T,E> {
@@ -159,9 +167,61 @@ enum Result<T,E> {
 	Err(E),
 }
 
+The Result enum contains either the value of Ok, which can contain a result type, which should be the result of the function. It also contains a type for the Error case, which is used to attach information about the error. Let's look at an example of its use:
+
+use std::fs::File;
+
+fn main() {
+    let f = File::open("hello.txt");
+
+    let f = match f {
+        Ok(file) => file,
+        Err(error) => panic!("Problem opening the file: {:?}", error),
+    };
+}
+
+Here we use a so called match operator to distinguish between the good case and the error case. In the event of an error we turn it into a panic and print out the error. Here is the output in the event of a missing file:
+
+thread 'main' panicked at 'Problem opening the file: Os { code: 2, kind: NotFound, message: "No such file or directory" }', src/main.rs:8:23
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+As we can see here the error has a kind and a message to convey additional information about what happened. The match statement above is still a bit verbose, so it is possible to write a shorthand for that using the available methods in the Result type:
+
+let x = get_weather("Veldhoven").or(Ok(default));
+
+In this case we get a weather report for Veldhoven if all goes well, or we get a result containing a default report in case of a failure. The result type contains more functions to tweak the error case, such as returning a value instead of a result, calling a function in the event of an error to produce a default and producing a mutable value. Have look at the reference documentation if you are interested in this topic.
+
+An alternative to the Result type is the option type. This is used when it is ok when there might not be a value to return. Instead of returning a NULL which could go unchecked by the caller, the Option type must be handled. This forces the caller to expect this case as well.
+
 enum Option<T> {
 	Some(T),
 	None
 }
 
+6. Polymorphism
 
+Rust has does have an explicit class keyword or inheritance. Polymorphism in Rust is enabled by the use of Traits, which are similar to Interfaces in Java. An example of this would be creating a number of animals:
+
+trait Sound {
+	fn make_noise(&Self)-> String;
+}
+
+A dog and cat could then implement this trait as follows:
+
+struct Dog {};
+
+impl Sound for Dog {
+	fn make_noise(&Self) -> String {
+		return String::from("Woof!");
+	}
+}
+
+struct Cat {};
+
+impl Sound for Cat {
+	fn make_noise(&Self) -> String {
+		return String::from("Meow!");
+	}
+}
+
+A restriction to implementing a trait on a type is that either the trait or the type has to be part of our local project (or crate in Rust terms). 
