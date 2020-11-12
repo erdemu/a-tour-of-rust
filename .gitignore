@@ -13,3 +13,4 @@ Cargo.lock
 
 panic/target/
 ownership/target/
+slides/node_modules/
