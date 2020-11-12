@@ -1,21 +1,22 @@
 1 Example C++ memory safety example (CWE top 25)
 2 Origin of Rust (mozilla 2015, servo & multithreaded firefox)
 3 Linear typesystem, ownership, borrowing (scope, lifetime)
-4 Enums
+- 4 Enums
 5 Error handling (return types vs. C++ exception)
 6 Polymorphism (Generics, traits and trait objects)
 7 Concurrency (send&sync, Arcs, mutex)
-8 Macros
+- 8 Macros
 9  Unsafe
 10 Modules
-11 Std::lib
-12 Cargo
+11 Cargo
+- 12 Std::lib
 13 Integrated test & benchmark
 14 Releases (editions)
 
 We explain syntax at each example
 
-0.
+0. Introduction
+------------------
 
 ... intro Erdem ...
 
@@ -24,6 +25,7 @@ My name is Micha Hergarden and I am part of the SICS team at EUV source. I have 
 Our aim for tonight is to give you a short tour of the Rust programming language and to show in what aspects it differs from its cousins c and c++.
 
 1. Example C++ memory safety
+------------------
 
 #include<iostream>
 #include<vector>
@@ -51,12 +53,14 @@ The CWE website tracks common weaknesses in software development (https://cwe.mi
 This seems to suggest that even with good engineers working on the code, it is still difficult to prevent these types of errors from occuring. A common denominator for these issues is the use of languages like C or C++. These languages offer runtime efficiency and low level control, but have the trade off of requiring rigorous testing and code checking to make sure no unintended issues are introduced. In contrast, languages with a garbage collector offer better protection from some of these types of issues but have the trade off of lacking the low level control needed in certain application domains, i.e. realtime systems. Enter Rust...
 
 2. Origin of Rust
+------------------
 
 In 2006 a Mozilla Research employee named Graydon Hoare started the Rust language project as a means to design a language that provides better memory safety guarantees while still offering the low level control that c and c++ offer. Mozilla started sponsoring the project in 2009 and announced it in 2010. The first major release of the language was in 2015. Initially the language was used for the Servo browser project. Servo was developed in cooperation with Samsung as a means to explore the concurrency and memory safety properties of Rust in order to create a parallelized web browser. The CSS style engine has already found its way into the Firefox browser.
 
 Rust gained popularity outside of Mozilla and has earned the honour of being the "most loved programming language" on the Stack Overflow developer survey since 2016. The industry also started adopting the language and according to the project page around 148 companies are using Rust in production code. Microsoft and Google have shown serious interest and researched the language for use in security critical components.
 
 3. Linear typesystem, ownership, borrowing and lifetimes. (take image from thesis)
+------------------
 
 The main property that differentiates Rust from languages like C and C++ is its typesystem. This system is known as a linear typesystem. The book 'Advanced topics in Types and Programming Languages' by Benjamin Pierce defines a linear typesystem as follows:
 
@@ -130,13 +134,15 @@ fn main() {
     print!("{}", output);
 }
 
-A nice consequence of using linear types is that there is no need for a garbage collector. The compiler can deduce which variable a value belongs to and what the scope of that variable is. In Rust this scope is called the Lifetime of a variable. The absence of a garbage collector lets Rust enter the domain of languages like c and c++ and this is why it is often touted as a system programming language.
+A nice consequence of using linear types is that there is no need for a garbage collector. The compiler can deduce which variable a value belongs to and what the scope of that variable is. In Rust this scope is called the Lifetime of a variable. The absence of a garbage collector lets Rust enter the domain of languages like c and c++ and this is why it is often touted as a system programming language. In the event that you really do need a copy of a value, you can create one by calling the 'clone()' method on a type. This creates a deep copy of the value.
 
 4. Enums
+------------------
 
 ----- ERDEM ----------
 
 5. Error Handling (Don't panic!)
+------------------
 
 Rust divides error handling in two categories: non-recoverable and recoverable. A non-recoverable error is an condition in the program that should never happen and is cause for the program to end prematurely. An example of that would be a division by zero as that leads to an undefined result. In Rust such an error is called a 'panic'. In the event of a panic, the program halts and a default handler is called. Rust will start unwinding the stack and print out a stacktrace for further analysis. One thing to note is that a panic will stay within the boundaries of a thread. So if one thread panics, it does not mean that your whole program will crash. Instead, the thread will abort and the parent thread will be able to retrieve a thread result. In this case the result will be an error. This makes for more robust programs and allows the program to continue the other threads.
 
@@ -199,8 +205,9 @@ enum Option<T> {
 }
 
 6. Polymorphism
+------------------
 
-Rust has does have an explicit class keyword or inheritance. Polymorphism in Rust is enabled by the use of Traits, which are similar to Interfaces in Java. An example of this would be creating a number of animals:
+Polymorphism in Rust is enabled by the use of Traits, which are similar to Interfaces in Java or Abstract classed in C++. Rust does not have classes or inheritance, but you can create structs and add methods to them. An example of a trait and implementation would be creating a number of animals:
 
 trait Sound {
 	fn make_noise(&Self)-> String;
@@ -208,7 +215,7 @@ trait Sound {
 
 A dog and cat could then implement this trait as follows:
 
-struct Dog {};
+struct Dog { name: String };
 
 impl Sound for Dog {
 	fn make_noise(&Self) -> String {
@@ -216,7 +223,7 @@ impl Sound for Dog {
 	}
 }
 
-struct Cat {};
+struct Cat { name: String };
 
 impl Sound for Cat {
 	fn make_noise(&Self) -> String {
@@ -224,4 +231,42 @@ impl Sound for Cat {
 	}
 }
 
-A restriction to implementing a trait on a type is that either the trait or the type has to be part of our local project (or crate in Rust terms). 
+Here we define the trait Sound, which can be implemented to give a dog or a cat the ability to make a sound. Traits resemble abilities and represent something that a type can do. In Rust you must have a trait in your scope in order to implement its methods. The reason for this is that it would lead to naming conflicts otherwise. We will see later how a trait can be brought into scope. A nice feature of this system is that it allows you to extend even build in types like String with your own traits.
+
+Rust does not allow variables of a trait type, so this is not allowed:
+
+let dog: Dog;
+let sound: Sound = dog;
+
+This is because the size of variable sound has to be known at compile time and any type can implement Sound. In Rust you will need to make sound a reference to a trait like so:
+
+let sound: &Sound = &dog;
+
+The size of a reference is known at compile time and therefore it is allowed. A reference to a trait type is called a trait object. In Rust a trait object is a fat pointer consisting of a pointer to the value (dog) and a vtable containing pointers to the trait method implementation. This differs somewhat from c++ vtables as the vtable is not part of the type itself, but part of the trait object. This allows for many trait implementations on a type, even when it is a small type like an integer. 
+
+A trait object can be used when you want a mixed collection of objects. For instance, if we want to create a mixed salad:
+
+trait Vegetable {
+}
+
+struct Salad<V: Vegetable> {
+	veggies: Vec<V>
+}
+
+The Salad has a generic type V, akin to templating in C++. Any type is allowed for V as long as it implements the Vegetable trait. This is called a trait bound in Rust. The problem is that only a single type can be supplied for V. Our salad will consist of a single vegetable. We cannot solve this by asking for a Vec<Vegetable> as the size needs to be known at compile time. The solution is to use a trait object called Box<>. A box contains a pointer to a value stored on the heap. The box itself is a trait object and thus of fixed size. Our mixed salad can thus be made like this:
+
+struct Salad {
+	veggies: Vec<Box<Vegetable>>
+}
+
+One downside of working with traits is that they are less efficient due to dynamic dispatch. In some cases it might be beter to use a generic function instead. A generic function is akin to c++ templating and allows to define a function for any type:
+
+fd say_hello<W: Write>(out: &mut W) {
+	out.write("hello world");
+	out.flush();
+}
+
+The function can be called with any type that implements the Write trait. At compile time machine code is generated for each type and in most cases even inlined. The downside of this is that it may cause code bloat.
+
+7. Concurrency
+------------------
