@@ -1,15 +1,15 @@
 1 Example C++ memory safety example (CWE top 25)
 2 Origin of Rust (mozilla 2015, servo & multithreaded firefox)
 3 Linear typesystem, ownership, borrowing (scope, lifetime)
-- 4 Enums
+4 Enums
 5 Error handling (return types vs. C++ exception)
 6 Polymorphism (Generics, traits and trait objects)
 7 Concurrency (send&sync, Arcs, mutex)
-- 8 Macros
+8 Macros
 9  Unsafe
 10 Modules
 11 Cargo
-- 12 Std::lib
+12 Std::lib
 13 Integrated test & benchmark
 14 Releases (editions)
 
@@ -207,7 +207,7 @@ enum Option<T> {
 6. Polymorphism
 ------------------
 
-Polymorphism in Rust is enabled by the use of Traits, which are similar to Interfaces in Java or Abstract classed in C++. Rust does not have classes or inheritance, but you can create structs and add methods to them. An example of a trait and implementation would be creating a number of animals:
+Polymorphism in Rust is enabled by the use of Traits, which are similar to Interfaces in Java or Abstract classed in C++. Rust does not have classes or inheritance, but you can create structs and add methods to them by implementing a trait which declares the methods. An example of a trait and implementation would be creating a number of animals:
 
 trait Sound {
 	fn make_noise(&Self)-> String;
@@ -231,42 +231,66 @@ impl Sound for Cat {
 	}
 }
 
-Here we define the trait Sound, which can be implemented to give a dog or a cat the ability to make a sound. Traits resemble abilities and represent something that a type can do. In Rust you must have a trait in your scope in order to implement its methods. The reason for this is that it would lead to naming conflicts otherwise. We will see later how a trait can be brought into scope. A nice feature of this system is that it allows you to extend even build in types like String with your own traits.
+Here we define the trait Sound, which can be implemented to give a dog or a cat the ability to make a sound. Traits resemble abilities and represent something that a type can do. In Rust you must have a trait in your scope in order to implement its methods. The reason for this is that it could lead to naming conflicts otherwise. We will see later how a trait can be brought into scope in the section on modules. A nice feature of this system is that it allows you to even extend build in types like an int 32 with your own traits.
 
-Rust does not allow variables of a trait type, so this is not allowed:
+Trait objects
 
-let dog: Dog;
-let sound: Sound = dog;
+Because Rust does not have classes or inheritance, you cannot create base classes. Suppose I want to create a framework for gui elements. Each element should be able to draw itself, so we define a Draw trait that must be implemented by the elements:
 
-This is because the size of variable sound has to be known at compile time and any type can implement Sound. In Rust you will need to make sound a reference to a trait like so:
-
-let sound: &Sound = &dog;
-
-The size of a reference is known at compile time and therefore it is allowed. A reference to a trait type is called a trait object. In Rust a trait object is a fat pointer consisting of a pointer to the value (dog) and a vtable containing pointers to the trait method implementation. This differs somewhat from c++ vtables as the vtable is not part of the type itself, but part of the trait object. This allows for many trait implementations on a type, even when it is a small type like an integer. 
-
-A trait object can be used when you want a mixed collection of objects. For instance, if we want to create a mixed salad:
-
-trait Vegetable {
+trait Draw {
+	fn draw(&self);
 }
 
-struct Salad<V: Vegetable> {
-	veggies: Vec<V>
+If we want to make a canvas with a vector of different elements we cannot do this:
+
+struct Canvas {
+	canvas: Vec<Draw>,
 }
 
-The Salad has a generic type V, akin to templating in C++. Any type is allowed for V as long as it implements the Vegetable trait. This is called a trait bound in Rust. The problem is that only a single type can be supplied for V. Our salad will consist of a single vegetable. We cannot solve this by asking for a Vec<Vegetable> as the size needs to be known at compile time. The solution is to use a trait object called Box<>. A box contains a pointer to a value stored on the heap. The box itself is a trait object and thus of fixed size. Our mixed salad can thus be made like this:
+The reason is that Rust wants to know the size of the elements at compile time and some elements might not even be known by then, for instance if we offer this as a library that may be extended by others. The way Rust solves this is by means of a trait object. A trait object is an object that contains at least two pointers: one pointing to the concrete type implementing the trait and one to the vtable that contains pointers to implementations of the trait.
+This is denoted in Rust as follows:
 
-struct Salad {
-	veggies: Vec<Box<Vegetable>>
+struct Canvas {
+	canvas: Vec<Box<dyn Draw>>,
 }
 
-One downside of working with traits is that they are less efficient due to dynamic dispatch. In some cases it might be beter to use a generic function instead. A generic function is akin to c++ templating and allows to define a function for any type:
+Here we use a Box, which is a smart pointer which will be converted to a trait object. The dyn keyword tells Rust that we are talking about a trait instead of a struct type. In this way we can store many types of elements in the canvas. And trait objects allow us to extend an existing type with multiple vtables, i.e. implement multiple traits.
 
-fd say_hello<W: Write>(out: &mut W) {
-	out.write("hello world");
-	out.flush();
+Generic functions
+
+One other way to achieve polymorphism is the use of generic functions. Generic functions are similar to using templates in C++. Suppose we want to define a min function, which returns the smallest of two values. We could implement it like so:
+
+fn min(value1: u32, value2: u32) -> u32 {
+	if value1 <= value2 {
+		value1
+	} else {
+		value2
+	}
 }
 
-The function can be called with any type that implements the Write trait. At compile time machine code is generated for each type and in most cases even inlined. The downside of this is that it may cause code bloat.
+This of course only works for u32 types, so we want to make it more generic:
+
+fn min<T>(value1: T, value2: T) -> T {
+	if value1 <= value2 {
+		value1
+	} else {
+		value2
+	}
+}
+
+The capital T denotes any type with which this function will be called. Like templates, Rust will generate the machine code compile time for each type. There is still one problem with this implementation however. Not all types can be compared. So we need to add some sort of restriction on the type that can be used. Such a restriction is called a bound in Rust and can be added like so:
+
+fn min<T: Ord>(value1: T, value2: T) -> T {
+	if value1 <= value2 {
+		value1
+	} else {
+		value2
+	}
+}
+
+Now only the right types can be used with this function. It is possible to add more generic types and it is also possible to add more bounds to a type. We will not be diving deeper into this topic for now.
+
+It can be tricky to decide when to use trait objects and when to use generics. Generics may cause code bloat, because there will be code generated for each type the function is called with. And the generated code may be inlined. The upshot however is that there is practically no runtime overhead. This is in contrast with trait objects, which do have some indirection overhead at runtime, but will produce no code bloat.
 
 7. Concurrency
 ------------------
