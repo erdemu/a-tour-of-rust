@@ -10,6 +10,7 @@
     "mdx-deck": "^4.1.1"
   },
   "scripts": {
-    "start": "mdx-deck slide_text.mdx"
+    "start": "mdx-deck slide_text.mdx",
+    "build": "mdx-deck build slide_text.mdx"
   }
 }
