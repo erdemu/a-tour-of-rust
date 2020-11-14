@@ -431,3 +431,42 @@ let mut config = config_for_child.lock().unwrap();
 The mutex is automatically released when the function finishes and its scope ends. Unfortunately, mutexes in Rust do suffer from deadlocks, like any other mutex. One way of getting a deadlock it trying to aqcuire a lock while still within a lock. Rust mutexes are non recursive. Another possibility is to block on multiple mutexes. The linear typesystem cannot protect you from this.
 
 Finally, if a thread panics while holding a lock it will poison the mutex. This means that after that all calls to lock will fail as it may not be safe to use the value within. Rust offers other mechanisms, but we will not look into those further.
+
+
+
+9. Unsafe
+--------------------
+
+Now that we have seen some of Rusts most prominent safety features, you may wonder how this integrates into the rest of our environment? There is a big corpus of c and c++ code, which includes most operating systems. How can we then interoperate with this world? Welcome to the soft underbelly of the Rust beast... What Rust aims for in terms of safety is to erradicate undefined behavior. In languages like C or C++ there is a notion that the programmer is responsible for checking that writes to an array do not overshoot its boundary, or that we don't use uninitialized memory etc. Rust makes that behavior defined by not allowing it to happen in the first place. The problem we face now is that there are times where we do have to dereference a raw pointer, or perform an unchecked write into an array for the sake of efficiency. An example of reading from and writing to raw pointers would be the glue code we need to interoperate with c/c++ code. We cannot expect the whole world to rewrite everything in Rust, so we need some way to use the code from Rust code. Enter unsafe.
+
+The unsafe keyword does not disable Rusts basic rules. We stil have type checks, lifetime checks, and bounds checks on indices. Inside an unsafe block Rust does allow for some extra features to be enabled on top of that. Some examples are:
+
+- call other unsafe code and implement unsafe traits
+- dereference raw pointers
+- call functions written in other languages.
+- use mutable static variables
+- access union fields
+
+The Rust standard library contains numerous pieces of code that are marked unsafe for various reasons. Here is one such example from the Vector code:
+
+pub fn push(&mut self, value: T) {
+	// This will panic or abort if we would allocate > isize::MAX bytes
+	// or if the length increment would overflow for zero-sized types.
+	if self.len == self.buf.capacity() {
+		self.reserve(1);
+	}
+	unsafe {
+		let end = self.as_mut_ptr().add(self.len);
+		ptr::write(end, value);
+		self.len += 1;
+	}
+}
+
+The push function lets users add a new element to a vector as long as there is still free room. The first part of the function checks if the length is equal to the capacity and reserves more space if it needs to. The second part has been marked unsafe as it dereferences a raw pointer for instance. Here the unsafe keyword tells the compiler that it should trust the author for the correctness of the code. In this case the efficiency of the function was deemed important enough to implement it as an unsafe block to avoid boundary checks. The part that makes is unsafe is the value of end. This is however derived from the self.len value, which in turn is checked in the safe block of this function. In that sense the function is still upholding defined behavior.
+
+That is actually what the unsafe keyword is meant to do: it turns undefined behavior into defined behavior by wrapping unsafe code inside safe code. Now, a caller of the push methog does not need to use the unsafe keyword to call this function. As far as they are concerned, this function is perfectly safe to use.
+
+Unsafe in Rust is a critical part to be able to write efficient code in the standard library, to be able to talk to the operating system and to implement some of the synchronization primitives used for concurrency.
+
+One other thing I would like to mention here is the Rustbelt project. This project aims to perform a formal verification of the Rust standard library and prove it correct.
+
