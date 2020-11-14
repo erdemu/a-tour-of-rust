@@ -294,3 +294,140 @@ It can be tricky to decide when to use trait objects and when to use generics. G
 
 7. Concurrency
 ------------------
+
+The strength of the linear typesystem lies in its application in concurrent programming. Concurrent programming has numerous pitfalls such as data races where multiple threads mutate the same value in memory at interleaved execution, deadlocks and livelocks. These pitfalls only come into play when you have shared mutable state. The common solution to this is to remove mutability by adding locks like mutexes. Rust however tries to solve this by removing the shared part. Let's first look at the paradigms that Rust supports.
+
+Fork/Join
+
+The simplest concurrent model that we can implement is having multiple threads that do not share data. Here is an example of such a program:
+
+fn proces_files(files: Vec<String>) -> io::Result<()> {
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+
+There a few things to unpack here, so let's go through them one by one. The return value of this function is an io::Result value. The functions starts by splitting up a vector in multiple blocks so that each thread can work on its own block. We then create an empty vector of handles, using a macro. More on macros later on in the presentation. We then loop through the list of lists and create a thread for each one using the spawn method. The argument of this method is the keyword 'move' to indicate a transfer of ownership of a worklist to the thread. This is followed by a closure, denoted by the pipe symbols. A closure is a lightweight function where the pipe symbols surround the arguments (none in this case), followed by the body, which is processing the actual list.
+Finally we loop through the list of handles and wait for each thread to finish before continuing. The question mark operator helps propagating a possible io::Result to the parent thread.
+
+This type of parallellism is fairly easy to follow, but it does have the possibility of an unequal load balance in the threads. For instance, the proces_files maybe slow on large files. A thread with a worklist containing only large files will then be slower to finish than a thread with small files. This could leave one thread finishing early while it could help the other thread out.
+
+One thing to note is that if we would handle the io::Result here, the program as a whole would not panic in the event of a single thread panic. This allows the main program to collect results even if one thread would fail to do so. In this case the error is explicitly propagated and thus the whole program would panic.
+
+Sharing immutable data
+
+Now suppose we want to process the files using some shared configration file. We could extend the proces_files function with a reference to this file:
+
+fn process_files(worklist: Vec<String>, config: &Configuration){
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist, configuration))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+
+This will not compile, because we try to move ownership in the spawn call, and we cannot transfer ownership of a referenced object. The reason for this is that each thread will have its own independent lifetime. To Rust there is no guarantee that the child will never outlive its parent thread. It therefore assumes the worst and forbids sharing a reference in this way.
+
+The solution to this is to use a so called Arc, Atomic Reference Count.
+
+use std::sync::Arc;
+
+fn process_files(worklist: Vec<String>, config: Arc<Configuration>){
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		let config_for_child = config.clone();
+
+		thread_handles.push(
+				spawn(move || process_files(worklist, &config_for_child))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+
+First we import the Arc type from the sync module by means of the use statement. The configuration is then wrapped in an Arc. We create a clone of the Arc for each child thread. The clone increments the reference count in an atomic thread safe manner. Each thread will receive the cloned arc and is able to read from the configuration. The Configuration object can only be destroyed when the reference count is set to zero, which can only happen when all threads have finished. So even if the parent would bail out first, the childs will still have access to the configuration.
+
+Because the configuration is immutable, there won't be any data races. Childs can only read from the config.
+
+There exist libraries to simplify working with spawn/join. Examples are Crossbeam and Rayon. We will not dive into them here.
+
+Channels
+
+Another way of sharing data between threads is with the use of channels. Channels are thread safe one way queues. When a thread sends data it transfers ownership of that data to the channel. This guarantees that the sender will never modify the content after sending, thus preventing data races. A receiver can take data from the channel and gain ownership from the queue. After that the receiver is free to use the data in any way it wants.
+
+This technique is similar to unix pipes or Erlangs messaging system. If a channel is empty while trying to receive, the receiver will block. This way of transferring ownership is faster than creating copies of data to be sent over while still guaranteeing data safety. It also relieves the user from having to work with locking or shared memory.
+
+A channel can have multiple senders attached to it. If you want this, you clone the sender as many times as you need it. A channel can have only one receiver. If you need multiple receivers, you will need a mutex. We will come back to that in a minute.
+
+Send and Sync
+
+Not all types can be sent across threads. For instance a non-atomic reference counter cannot be sent because it might introduce a data race. In order to determine what can and what cannot be sent, the so called marker trait Send is automatically derived by the compiler on a type. This happens only when it is composed solely of Send types. A marker trait has no methods, it only exists to mark. A type is Send when it can be moved across threads.
+
+Types that can be shared across threads with a non mutable reference are automatically marked with the Sync trait. Such types often use mutability internally and are not thread safe.
+
+Shared mutable state
+
+In the event that you do need to share mutable data, Rust offers a mutex type. A notable difference with other languages is that in Rust, the proteced data is stored inside the mutex. This makes it impossible to access the data without aqcuiring the lock first. The data is the result of calling the lock() method on a mutex like so. This lock is scoped and released automatically.
+
+We could make our configuration mutable accross theads like so:
+
+fn process_files(worklist: Vec<String>, config: Arc<Mutex<Configuration>>){
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		let config_for_child = config.clone();
+
+		thread_handles.push(
+				spawn(move || process_files(worklist, &config_for_child))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+
+The process files function then accesses the value like so:
+
+let mut config = config_for_child.lock().unwrap();
+
+The mutex is automatically released when the function finishes and its scope ends. Unfortunately, mutexes in Rust do suffer from deadlocks, like any other mutex. One way of getting a deadlock it trying to aqcuire a lock while still within a lock. Rust mutexes are non recursive. Another possibility is to block on multiple mutexes. The linear typesystem cannot protect you from this.
+
+Finally, if a thread panics while holding a lock it will poison the mutex. This means that after that all calls to lock will fail as it may not be safe to use the value within. Rust offers other mechanisms, but we will not look into those further.
