@@ -26,26 +26,6 @@ Our aim for tonight is to give you a short tour of the Rust programming language
 
 1. Example C++ memory safety
 ------------------
-
-#include<iostream>
-#include<vector>
-#include<string>
-
-int main(int argc, char *argv[])
-{
-        std::vector<std::string> strings;
-
-        strings.push_back("Hello");
-        strings.push_back("World");
-
-        std::string& ref = strings[0];
-
-	add_more_strings(&strings);
-
-        std::cout << ref << std::endl;
-        return 0;
-}
-
 Will this work? The answer is: maybe. In some cases the vector will allocate new memory to enlarge and move its elements to this newly allocated block. The problem is that the reference 'ref' is then pointing into unused memory. This opens the door for segmentation faults or information leaking.
 
 The CWE website tracks common weaknesses in software development (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The top 25 shows numerous issues that may arise in software where memory management is not done properly. An internal investigation at Microsoft also showed that about 70% of the security bugs found in their products are related to memory management (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The Chromium project reports the same figures for their Chrome derived browser ( https://www.chromium.org/Home/chromium-security/memory-safety).
@@ -80,59 +60,13 @@ Let's view this in a piece of Rust code.
 
 In the first example we pass a string value to a function that will uppercase it internally. The function takes the string by value and therefore the ownership of the string is transferred to the function (or rather the variable name in the argument). 
 
-fn uppercase(input: String) {
-    input.to_uppercase();
-}
-
-fn main() {
-    let output = String::from("hello world.");
-    uppercase(output);
-}
 
 Any attempt to refer to the string after calling the function will result in a compilation error:
 
-fn uppercase(input: String) {
-    input.to_uppercase();
-}
-
-fn main() {
-    let output = String::from("hello world.");
-    uppercase(output);
-    //print!("{}", output);
-}
-
 The output from the compiler is:
-
-micha@linux-gvwr:~/asml-tour-of-rust/ownership (main)> cargo run
-   Compiling ownership v0.1.0 (/home/micha/asml-tour-of-rust/ownership)
-error[E0382]: borrow of moved value: `output`
- --> src/main.rs:8:18
-  |
-6 |     let output = String::from("hello world.");
-  |         ------ move occurs because `output` has type `std::string::String`, which does not implement the `Copy` trait
-7 |     uppercase(output);
-  |               ------ value moved here
-8 |     print!("{}", output);
-  |                  ^^^^^^ value borrowed here after move
-
-error: aborting due to previous error
-
-For more information about this error, try `rustc --explain E0382`.
-error: could not compile `ownership`.
-
-To learn more, run the command again with --verbose.
 
 When we pass the same string by reference, the ownership is not transferred but the function is able to borrow the string. The main function can still use the string after the function returns:
 
-fn uppercase(input: &String) {
-    input.to_uppercase();
-}
-
-fn main() {
-    let output = String::from("hello world.");
-    uppercase(&output);
-    print!("{}", output);
-}
 
 A nice consequence of using linear types is that there is no need for a garbage collector. The compiler can deduce which variable a value belongs to and what the scope of that variable is. In Rust this scope is called the Lifetime of a variable. The absence of a garbage collector lets Rust enter the domain of languages like c and c++ and this is why it is often touted as a system programming language. In the event that you really do need a copy of a value, you can create one by calling the 'clone()' method on a type. This creates a deep copy of the value.
 
@@ -147,20 +81,6 @@ A nice consequence of using linear types is that there is no need for a garbage 
 Rust divides error handling in two categories: non-recoverable and recoverable. A non-recoverable error is an condition in the program that should never happen and is cause for the program to end prematurely. An example of that would be a division by zero as that leads to an undefined result. In Rust such an error is called a 'panic'. In the event of a panic, the program halts and a default handler is called. Rust will start unwinding the stack and print out a stacktrace for further analysis. One thing to note is that a panic will stay within the boundaries of a thread. So if one thread panics, it does not mean that your whole program will crash. Instead, the thread will abort and the parent thread will be able to retrieve a thread result. In this case the result will be an error. This makes for more robust programs and allows the program to continue the other threads.
 
 An example of a panic situation happens for instance when we explicitly call the panic macro:
-fn do_something() {
-    panic!("Oh noes!");
-}
-
-fn main() {
-    do_something();
-}
-
-micha@linux-gvwr:~/asml-tour-of-rust/panic (main)> cargo run
-   Compiling panic v0.1.0 (/home/micha/asml-tour-of-rust/panic)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.23s
-     Running `target/debug/panic`
-thread 'main' panicked at 'Oh noes!', src/main.rs:2:5
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 When the program us run with the RUST_BACKTRACE variable set, we will see a full backtrace, including the panic handler itself. In a lot of cases, the output from the less verbose panic is clear enough to deduce what caused the program to terminate. And when the panic macro is used, the programmer often provides an explicit error message to be printed out.
 
@@ -174,17 +94,6 @@ enum Result<T,E> {
 }
 
 The Result enum contains either the value of Ok, which can contain a result type, which should be the result of the function. It also contains a type for the Error case, which is used to attach information about the error. Let's look at an example of its use:
-
-use std::fs::File;
-
-fn main() {
-    let f = File::open("hello.txt");
-
-    let f = match f {
-        Ok(file) => file,
-        Err(error) => panic!("Problem opening the file: {:?}", error),
-    };
-}
 
 Here we use a so called match operator to distinguish between the good case and the error case. In the event of an error we turn it into a panic and print out the error. Here is the output in the event of a missing file:
 
