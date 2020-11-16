@@ -5,13 +5,13 @@
 5 Error handling (return types vs. C++ exception)
 6 Polymorphism (Generics, traits and trait objects)
 7 Concurrency (send&sync, Arcs, mutex)
-8 Macros
-9  Unsafe
+8 Unsafe
+9 Macros
 10 Modules
-11 Cargo
+11 Integrated tests & benchmark
 12 Std::lib
-13 Integrated test & benchmark
-14 Releases (editions)
+13 Cargo
+14 Releases & development
 
 We explain syntax at each example
 
@@ -434,7 +434,7 @@ Finally, if a thread panics while holding a lock it will poison the mutex. This 
 
 
 
-9. Unsafe
+8. Unsafe
 --------------------
 
 Now that we have seen some of Rusts most prominent safety features, you may wonder how this integrates into the rest of our environment? There is a big corpus of c and c++ code, which includes most operating systems. How can we then interoperate with this world? Welcome to the soft underbelly of the Rust beast... What Rust aims for in terms of safety is to erradicate undefined behavior. In languages like C or C++ there is a notion that the programmer is responsible for checking that writes to an array do not overshoot its boundary, or that we don't use uninitialized memory etc. Rust makes that behavior defined by not allowing it to happen in the first place. The problem we face now is that there are times where we do have to dereference a raw pointer, or perform an unchecked write into an array for the sake of efficiency. An example of reading from and writing to raw pointers would be the glue code we need to interoperate with c/c++ code. We cannot expect the whole world to rewrite everything in Rust, so we need some way to use the code from Rust code. Enter unsafe.
