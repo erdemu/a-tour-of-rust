@@ -5,6 +5,8 @@ import { default as style } from "./resources/theme";
 import { default as SlideFooter } from "./resources/custom_layout";
 
 import "prismjs/components/prism-rust";
+import "prismjs/components/prism-toml";
+
 export const theme = style;
 
 import poster from "./resources/images/poster.png";
@@ -766,7 +768,7 @@ function_shall_not_be_named();
 <CodeSurfer theme={github}>
 
 
-```toml title-"Cargo" subtitle="Cargo.toml"
+```toml title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -789,7 +791,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 1,15
+```toml 1,15 title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -812,7 +814,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml
+```toml title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -835,7 +837,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 2
+```toml 2 title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -858,7 +860,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 3:14
+```toml 3:14 title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -881,7 +883,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 16:21
+```toml 16:21 title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -904,7 +906,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 16[6:15]
+```toml 16[6:15] title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -927,7 +929,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 16[6:30]
+```toml 16[6:30] title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -950,7 +952,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 17:18
+```toml 17:18 title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -975,7 +977,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 17:18
+```toml 17:18 title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -998,6 +1000,396 @@ gfx_core = "0.9"
 gfx_device_gl = "0.16"
 glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
+```
+
+</CodeSurfer>
+
+
+---
+
+# Built-in testing & benchmarks
+
+- Rust has built-in tests and benchmarks
+- You can designate functions as a test or benchmark function by supplying a configuration flag
+- You can think these designators as as a target
+
+---
+
+<CodeSurfer theme={github}>
+
+
+```rust title="Built in testing" subtitle="My math module"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+```
+
+```rust title="Built in testing" subtitle="My math module"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+}
+
+```
+
+```rust 13 title="Built in testing" subtitle="Compile time target"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+}
+
+```
+
+```rust title="Built in testing" subtitle="Compile time target"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+  fn test_add( ){
+    assert_eq!(super::my_math_module::add(1, 2), 3);
+  }
+
+}
+
+```
+
+```rust 16 title="Built in testing" subtitle="Compile time target"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+  #[test]
+  fn test_add( ){
+    assert_eq!(super::my_math_module::add(1, 2), 3);
+  }
+
+}
+
+```
+
+```rust 16:19 title="Built in testing" subtitle="Compile time target"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+  fn test_internal ()
+  {
+    // some fn for tests only
+  }
+
+  #[test]
+  fn test_add( ){
+    assert_eq!(super::my_math_module::add(1, 2), 3);
+  }
+
+}
+
+```
+
+```rust 26:30 title="Built in testing" subtitle="Testing panics"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+  fn test_internal ()
+  {
+    // some fn for tests only
+  }
+
+  #[test]
+  fn test_add( ){
+    assert_eq!(super::my_math_module::add(1, 2), 3);
+  }
+
+  #[test]
+  #[should_panic]
+  fn test_any_panic() {
+     divide_non_zero_result(1, 0);
+  }
+
+}
+
+```
+
+```rust 27 title="Built in testing" subtitle="Testing panics"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+  fn test_internal ()
+  {
+    // some fn for tests only
+  }
+
+  #[test]
+  fn test_add( ){
+    assert_eq!(super::my_math_module::add(1, 2), 3);
+  }
+
+  #[test]
+  #[should_panic(expected = "Divide result is zero")]
+  fn test_any_panic() {
+     divide_non_zero_result(1, 0);
+  }
+
+}
+
+```
+
+```bash title="Built in testing" subtitle="Testing panics"
+
+# How to run tests
+
+$ cargo test
+
+```
+
+```bash title="Built in testing" subtitle="Testing panics"
+
+# How to run tests
+
+$ cargo test
+
+Finished test [unoptimized + debuginfo] target(s) in 0.01s
+ Running target/debug/deps/rusty_test_bench-e583d32cbe003e0c
+
+running 2 tests
+test tests::test_sub ... ok
+test tests::test_add ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+```
+
+```rust title="Built in benchmarking" subtitle="Testing panics"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  #[bench]
+  pub fn benchmark_plus (b: &mut Bencher)
+  {
+    b.iter(|| {
+      let y = super::my_math_module::add(1, 2);
+    });
+  }
+}
+
+```
+
+```rust 15 title="Built in benchmarking" subtitle="Testing panics"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  #[bench]
+  pub fn benchmark_plus (b: &mut Bencher)
+  {
+    b.iter(|| {
+      let y = super::my_math_module::add(1, 2);
+    });
+  }
+}
+
+```
+
+```rust 16[26:41] title="Built in benchmarking" subtitle="Testing panics"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  #[bench]
+  pub fn benchmark_plus (b: &mut Bencher)
+  {
+    b.iter(|| {
+      let y = super::my_math_module::add(1, 2);
+    });
+  }
+}
+
+```
+
+```rust 18:20 title="Built in benchmarking" subtitle="Testing panics"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  #[bench]
+  pub fn benchmark_plus (b: &mut Bencher)
+  {
+    b.iter(|| {
+      let y = super::my_math_module::add(1, 2);
+    });
+  }
+}
+
+```
+
+```bash title="Built in benchmarking" subtitle="Testing panics"
+
+# How to run benchmarks
+
+$ cargo bench
+
+```
+
+```bash title="Built in benchmarking" subtitle="Testing panics"
+
+# How to run tests
+
+$ rustc --test -O bench.rs
+
+```
+
+```bash title="Built in benchmarking" subtitle="Testing panics"
+
+# How to run tests
+
+$ rustc --test -O bench.rs
+$ ./bench --bench
+
+
+```
+
+```bash title="Built in benchmarking" subtitle="Testing panics"
+
+# How to run tests
+
+$ rustc --test -O bench.rs
+$ ./bench --bench
+running 1 test
+test benchmark_plus ... bench:       191 ns/iter (+/- 16)
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 1 measured
+
 ```
 
 </CodeSurfer>
