@@ -30,7 +30,10 @@ Our aim for tonight is to give you a short tour of the Rust programming language
 ------------------
 Will this work? The answer is: maybe. In some cases the vector will allocate new memory to enlarge and move its elements to this newly allocated block. The problem is that the reference 'ref' is then pointing into unused memory. This opens the door for segmentation faults or information leaking.
 
-The CWE website tracks common weaknesses in software development (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The top 25 shows numerous issues that may arise in software where memory management is not done properly. An internal investigation at Microsoft also showed that about 70% of the security bugs found in their products are related to memory management (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The Chromium project reports the same figures for their Chrome derived browser ( https://www.chromium.org/Home/chromium-security/memory-safety).
+### NEXT SHEET ###
+The CWE website tracks common weaknesses in software development (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). 
+
+The top 25 shows numerous issues that may arise in software where memory management is not done properly. An internal investigation at Microsoft also showed that about 70% of the security bugs found in their products are related to memory management (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The Chromium project reports the same figures for their Chrome derived browser ( https://www.chromium.org/Home/chromium-security/memory-safety).
 
 This seems to suggest that even with good engineers working on the code, it is still difficult to prevent these types of errors from occuring. A common denominator for these issues is the use of languages like C or C++. These languages offer runtime efficiency and low level control, but have the trade off of requiring rigorous testing and code checking to make sure no unintended issues are introduced. In contrast, languages with a garbage collector offer better protection from some of these types of issues but have the trade off of lacking the low level control needed in certain application domains, i.e. realtime systems. Enter Rust...
 
