@@ -21,7 +21,7 @@ import poster from "./resources/images/poster.png";
 />
 
 ---
-<CodeSurfer theme={GitHub}>
+<CodeSurfer theme={github}>
 
 ```cpp title="Memory safety example"
 #include<iostream>
@@ -425,7 +425,7 @@ import dontpanic from "./resources/images/dontpanic.jpeg";
 
 ---
 
-<CodeSurfer theme={GitHub}>
+<CodeSurfer theme={github}>
 
 ```rust title="Panic example"
 fn do_something() {
@@ -489,7 +489,7 @@ enum Option<T> {
 # Polymorphism
 ---
 
-<CodeSurfer theme={GitHub}>
+<CodeSurfer theme={github}>
 
 ```rust title="Traits"
 trait Sound {
@@ -521,7 +521,7 @@ impl Sound for Cat {
 ```
 </CodeSurfer>
 
-<CodeSurfer theme={GitHub}>
+<CodeSurfer theme={github}>
 
 ```rust title="Trait objects"
 trait Draw {
@@ -586,7 +586,7 @@ fn min<T: Ord>(value1: T, value2: T) -> T {
 ---
 # Concurrency
 ---
-<CodeSurfer theme={GitHub}>
+<CodeSurfer theme={github}>
 
 ```rust title="Fork/join"
 fn proces_files(files: Vec<String>) -> io::Result<()> {
@@ -774,7 +774,7 @@ let mut config = config_for_child.lock().unwrap();
 
 ---
 
-<CodeSurfer theme={GitHub}>
+<CodeSurfer theme={github}>
 
 ```rust 7,8,9,10,11 title="Fork/join"
 pub fn push(&mut self, value: T) {
