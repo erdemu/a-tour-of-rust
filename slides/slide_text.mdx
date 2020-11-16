@@ -672,7 +672,7 @@ fn proces_files(files: Vec<String>) -> io::Result<()> {
 }
 ```
 
-```rust 10:12,16 title="Fork/join"
+```rust 10,11,12,16 title="Fork/join"
 fn proces_files(files: Vec<String>) -> io::Result<()> {
 	const NTHREADS: usize = 8;
 
@@ -774,7 +774,7 @@ let mut config = config_for_child.lock().unwrap();
 
 ---
 
-<CodeSurfer 7:11 theme={GitHub}>
+<CodeSurfer 7,8,9,10,11 theme={GitHub}>
 
 ```rust title="Fork/join"
 pub fn push(&mut self, value: T) {
