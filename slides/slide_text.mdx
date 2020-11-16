@@ -774,9 +774,9 @@ let mut config = config_for_child.lock().unwrap();
 
 ---
 
-<CodeSurfer 7,8,9,10,11 theme={GitHub}>
+<CodeSurfer theme={GitHub}>
 
-```rust title="Fork/join"
+```rust 7,8,9,10,11 title="Fork/join"
 pub fn push(&mut self, value: T) {
 	// This will panic or abort if we would allocate > isize::MAX bytes
 	// or if the length increment would overflow for zero-sized types.
