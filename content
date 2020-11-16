@@ -8,9 +8,9 @@
 8 Unsafe
 9 Macros
 10 Modules
-11 Integrated tests & benchmark
-12 Std::lib
-13 Cargo
+11 Std::lib
+12 Cargo
+13 Integrated tests & benchmark
 14 Releases & development
 
 We explain syntax at each example
