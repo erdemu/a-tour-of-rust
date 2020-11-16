@@ -1,17 +1,13 @@
-import { themes, Footer, Head } from "mdx-deck";
-
-import { CodeSurfer } from "code-surfer";
-import { GitHub } from "@code-surfer/themes";
-import "prismjs/components/prism-rust";
+import { themes } from "mdx-deck";
+import { CodeSurfer, CodeSurferColumns, Step } from "code-surfer";
+import { github } from "@code-surfer/themes";
 import { default as style } from "./resources/theme";
+import { default as SlideFooter } from "./resources/custom_layout";
+
+import "prismjs/components/prism-rust";
+export const theme = style;
 
 import poster from "./resources/images/poster.png";
-
-<Footer>
-  <h1>A tour of Rust</h1>
-</Footer>
-
-export const theme = style;
 
 <img
   src={poster}
@@ -26,68 +22,987 @@ export const theme = style;
 
 ---
 
+# Enums
+
+An enum in Rust is a type that represents data that is one of several possible variants. Each variant in the enum can optionally have data associated with it
+
 ---
 
-## The End
-
----
-
-<CodeSurfer theme={GitHub}>
+<CodeSurfer theme={github} title="Enums">
 
 
-```rust
+```rust title="Enums" subtitle="Basic decl."
 
-// Don't inline this so callers that call both this and the above won't wind
-// up using the combined stack space of both functions in some cases.
-#[inline(never)]
-fn float_to_decimal_common_shortest<T>(
-    fmt: &mut Formatter<'_>,
-    num: &T,
-    sign: flt2dec::Sign,
-    precision: usize,
-) -> Result
-where
-    T: flt2dec::DecodableFloat,
-{
-    // enough for f32 and f64
-    let mut buf: [MaybeUninit<u8>; flt2dec::MAX_SIG_DIGITS] = MaybeUninit::uninit_array();
-    let mut parts: [MaybeUninit<flt2dec::Part<'_>>; 4] = MaybeUninit::uninit_array();
-    let formatted = flt2dec::to_shortest_str(
-        flt2dec::strategy::grisu::format_shortest,
-        *num,
-        sign,
-        precision,
-        &mut buf,
-        &mut parts,
-    );
-    fmt.pad_formatted_parts(&formatted)
+enum IPType {
+  ipv4,
+  ipv6
 }
 
-// Common code of floating point Debug and Display.
-fn float_to_decimal_common<T>(
-    fmt: &mut Formatter<'_>,
-    num: &T,
-    negative_zero: bool,
-    min_precision: usize,
-) -> Result
-where
-    T: flt2dec::DecodableFloat,
-{
-    let force_sign = fmt.sign_plus();
-    let sign = match (force_sign, negative_zero) {
-        (false, false) => flt2dec::Sign::Minus,
-        (false, true) => flt2dec::Sign::MinusRaw,
-        (true, false) => flt2dec::Sign::MinusPlus,
-        (true, true) => flt2dec::Sign::MinusPlusRaw,
-    };
+```
 
-    if let Some(precision) = fmt.precision {
-        float_to_decimal_common_exact(fmt, num, sign, precision)
-    } else {
-        float_to_decimal_common_shortest(fmt, num, sign, min_precision)
-    }
+```rust title="Enums" subtitle="Basic decl"
+
+enum IPType {
+  ipv4,
+  ipv6
 }
+
+let a_var = IPType::ipv4;
+let b_var = IPType::ipv6;
+
+
+```
+
+```rust title="Enums" subtitle="More Useful"
+
+// Create an enum for Ip Addr Types
+
+enum IPType {
+  ipv4,
+  ipv6
+}
+
+
+struct IP
+{
+  type: IPType,
+  address: String,
+}
+
+```
+
+```rust title="Enums" subtitle="More Useful"
+
+// Create an enum for Ip Addr Types
+
+enum IPType {
+  ipv4,
+  ipv6
+}
+
+
+struct IP
+{
+  type: IPType,
+  address: String,
+}
+
+let localhost = Ip {
+  type: IPType::V4,
+  address: String::from("127.0.0.1"),
+};
+
 ```
 
 </CodeSurfer>
 
+
+---
+
+# Enums
+
+> An enum in Rust is a type that represents data that is one of several possible variants. Each variant in the enum can optionally have data associated with it
+
+---
+
+<CodeSurfer theme={github} >
+
+
+```rust title="Enums" subtitle="Enums superpowered"
+
+enum IPType {
+  ipv4,
+  ipv6
+}
+
+
+struct IP
+{
+  type: IPType,
+  address: String,
+}
+
+```
+
+```rust title="Enums" subtitle="Enums superpowered"
+
+enum IP {
+  ipv4(String),
+  ipv6(String),
+}
+
+```
+
+```rust title="Enums" subtitle="Enums superpowered"
+
+enum IP {
+  ipv4(String),
+  ipv6(String),
+  none,
+}
+
+```
+
+```rust title="Enums" subtitle="Enums superpowered"
+
+enum IP {
+  ipv4(String),
+  ipv6(String),
+  none,
+}
+
+let localhost = IP::ipv4(String::from("127.0.0.1"));
+
+```
+
+```rust title="Enums" subtitle="Can even have their own functions"
+
+enum IP {
+  ipv4(String),
+  ipv6(String),
+  none,
+}
+
+let localhost = IP::ipv4(String::from("127.0.0.1"));
+
+impl Ip{
+  fn is_valid (&self) -> bool {
+    // Ensure validtiy here
+  }
+}
+
+```
+
+</CodeSurfer>
+
+
+---
+
+<CodeSurfer theme={github}>
+
+
+```rust title="Enums" subtitle="Pattern Matching (superpowered)"
+
+enum IP {
+  ipv4(String),
+  ipv6(String),
+  none,
+}
+
+let localhost = IP::ipv4(String::from("127.0.0.1"));
+
+match localhost {
+  IP::ipv4(addr) => {
+    // Actions for ipv4
+  },
+  IP::ipv6(addr) => {
+    // Actions for ipv6
+  },
+  IP::none => {
+    // Actions for none
+  }
+}
+
+```
+
+```rust title="Enums" subtitle="Pattern Matching (superpowered)"
+
+let localhost = IP::ipv4(String::from("127.0.0.1"));
+
+match localhost {
+  IP::v4(ref value)  if value == "127.0.0.1" => {
+    println!("Nothing like home eh !");
+  },
+  IP::v4(ref value)  if value != "127.0.0.1" => {
+    println!("Your ipv4 addr is {}", value);
+  },
+  IP::v6 (addr)  => {
+    println!("Your ipv6 addr is {}", addr);
+  },
+  IP::none => { },
+  IP::ipv6(addr) => { },
+}
+
+```
+
+```rust title="Enums" subtitle="Pattern Matching (superpowered)"
+
+let localhost = IP::ipv4(String::from("127.0.0.1"));
+
+match localhost {
+  IP::v4(ref value)  if value == "127.0.0.1" => {
+    println!("Nothing like home eh !");
+  },
+  IP::v4(ref value)  if value != "127.0.0.1" => {
+    println!("Your ipv4 addr is {}", value);
+  },
+  IP::v6 (addr)  => {
+    println!("Your ipv6 addr is {}", addr);
+  },
+  IP::none => { },
+  IP::ipv6(_) => { },
+}
+
+```
+
+```rust title="Enums" subtitle="Pattern Matching (superpowered)"
+
+let localhost = IP::ipv4(String::from("127.0.0.1"));
+
+match localhost {
+  IP::v4(ref value)  if value == "127.0.0.1" => {
+    println!("Nothing like home eh !");
+  },
+  IP::v4(ref value)  if value != "127.0.0.1" => {
+    println!("Your ipv4 addr is {}", value);
+  },
+  IP::v6 (addr)  => {
+    println!("Your ipv6 addr is {}", addr);
+  },
+  _ => { },
+}
+
+```
+
+</CodeSurfer>
+
+
+---
+
+# Macros!
+
+---
+
+# Macros!
+
+- Rust have many different constructs to let you reuse code
+- You have generics, incredible typesystem and traits
+- But sometimes you have just one great idea that it is not possible to implement with those constraints
+- Enter macros
+- Macros are way more powerful than your C++ macro's
+- They can tap into ast parsing of the language
+- You should use them only if there is no other way
+
+---
+
+<CodeSurfer theme={github}>
+
+
+```rust title="Macros!" subtitle="See them from the eyes of the user"
+
+let x: Vec<u32> = vec![1, 2, 3];
+
+```
+
+```rust 3:10 title="Macros!" subtitle="See them from the eyes of the user"
+
+let x: Vec<u32> = vec![1, 2, 3];
+
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
+
+```
+
+```rust 3:10 title="Macros!" subtitle="See them from the eyes of the user"
+
+let x: Vec<u32> = vec![1, 2, 3];
+
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
+
+```
+
+</CodeSurfer>
+
+
+---
+
+<CodeSurferColumns theme={github}>
+
+
+<Step title="Macros!" subtitle="Expand the expansion">
+
+
+```rust
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
+```
+
+```rust
+macro_rules! vec {
+( $( $x:expr ),* ) => {
+    {
+        let mut temp_vec = Vec::new();
+        $(
+            temp_vec.push($x);
+        )*
+        temp_vec
+    }
+};
+}
+
+```
+
+</Step>
+
+
+<Step title="Macros!" subtitle="Expand the expansion">
+
+
+```rust
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
+```
+
+```rust 1
+macro_rules! vec { // fn vec! ( input )
+( $( $x:expr ),* ) => {
+    {
+        let mut temp_vec = Vec::new();
+        $(
+            temp_vec.push($x);
+        )*
+        temp_vec
+    }
+};
+}
+```
+
+</Step>
+
+
+<Step title="Macros!" subtitle="Expand the expansion">
+
+
+```rust
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
+```
+
+```rust 2
+macro_rules! vec {
+( $( $x:expr ),* ) => { // catch ast inside the input
+    {
+        let mut temp_vec = Vec::new();
+        $(
+            temp_vec.push($x);
+        )*
+        temp_vec
+    }
+};
+}
+```
+
+</Step>
+
+
+<Step title="Macros!" subtitle="Expand the expansion">
+
+
+```rust
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
+```
+
+```rust 2,5:7
+macro_rules! vec {
+( $( $x:expr ),* ) => {
+    {
+        let mut temp_vec = Vec::new();
+        $(
+            temp_vec.push($x);
+        )*
+        temp_vec
+    }
+};
+}
+```
+
+</Step>
+
+
+<Step title="Macros!" subtitle="Expand the expansion">
+
+
+```rust
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
+```
+
+```rust 4,8
+macro_rules! vec {
+( $( $x:expr ),* ) => {
+    {
+        let mut temp_vec = Vec::new();
+        $(
+            temp_vec.push($x);
+        )*
+        temp_vec
+    }
+};
+}
+```
+
+</Step>
+
+
+</CodeSurferColumns>
+
+
+---
+
+# Macros!
+
+- Use them sparingly
+- Standard library has less than 50 !!
+- That includes super basic stuff like print, format, try, stringfy
+
+---
+
+# Modules
+
+- You're mostly java people, so I don't have to sell modules to you right ?
+- We _try_ to divide a giant system into bite sized _modules_
+- Modules are representative of a unitary function/feature/data structure of the system
+- Rust has a very powerful module system
+- Module system manages code & structure visibility
+- A module can include functions, traits, implementations nested modules
+
+---
+
+<CodeSurfer theme={github}>
+
+
+```rust title="Modules" subtitle="Simple Module"
+
+mod greeting_services {
+    fn greetings() {
+        println!("Hello !");
+    }
+}
+
+```
+
+```rust title="Modules" subtitle="Visibility?"
+
+mod greeting_services {
+    fn greetings() {
+        println!("Hello !");
+    }
+}
+
+```
+
+```rust title="Modules" subtitle="Visibility?"
+
+mod greeting_services {
+    // Private to the greeting_services
+    fn greetings() {
+        println!("Hello !");
+    }
+}
+
+```
+
+```rust title="Modules" subtitle="Visibility?"
+
+mod greeting_services {
+    // Public
+    pub fn greetings() {
+        println!("Hello !");
+    }
+}
+
+```
+
+```rust title="Modules" subtitle="Visibility?"
+
+mod greeting_services {
+
+    pub(in crate::greeting_services) fn path_constrained_visibility() {
+        println!("Hello !");
+    }
+
+    pub(self) fn private() {
+        println!("Hello !");
+    }
+
+    pub(super) fn public_in_super() {
+        println!("Hello !");
+    }
+}
+
+```
+
+```rust title="Modules" subtitle="How about structs?"
+
+mod my_cool_module {
+
+  pub struct OpenBox<T> {
+      pub contents: T,
+  }
+
+  pub struct ClosedBox<T> {
+      contents: T,
+  }
+}
+
+```
+
+```rust 13 title="Modules" subtitle="How about structs?"
+
+mod my_cool_module {
+
+  pub struct OpenBox<T> {
+      pub contents: T,
+  }
+
+  pub struct ClosedBox<T> {
+      contents: T,
+  }
+}
+
+let obj = my_cool_module::OpenBox { contents: String::from("Hello, World! "), };
+
+
+```
+
+```rust 13 title="Modules" subtitle="How about structs?"
+
+mod my_cool_module {
+
+  pub struct OpenBox<T> {
+      pub contents: T,
+  }
+
+  pub struct ClosedBox<T> {
+      contents: T,
+  }
+}
+
+let obj = my_cool_module::ClosedBox { contents: String::from("Hello, World! "), };
+
+
+```
+
+```rust title="Modules" subtitle="How about structs?"
+
+mod my_cool_module {
+
+  pub struct OpenBox<T> {
+      pub contents: T,
+  }
+
+  pub struct ClosedBox<T> {
+      contents: T,
+  }
+
+  impl<T> ClosedBox<T> {
+      pub fn new(contents: T) -> ClosedBox<T> {
+        ClosedBox {
+          contents: contents,
+      }
+    }
+  }
+}
+
+```
+
+```rust title="Modules" subtitle="How about structs?"
+
+mod my_cool_module {
+
+  pub struct OpenBox<T> {
+      pub contents: T,
+  }
+
+  pub struct ClosedBox<T> {
+      contents: T,
+  }
+
+  impl<T> ClosedBox<T> {
+      pub fn new(contents: T) -> ClosedBox<T> {
+        ClosedBox {
+          contents: contents,
+      }
+    }
+  }
+}
+
+let obj = my_cool_module::ClosedBox::new("Hello, World!");
+
+```
+
+```rust title="Modules" subtitle="use keyword"
+
+use crate::some::deep::stuff::{
+  a_lovely_function,
+  a_douche_function,
+  a_trait_that_douche_accepts
+};
+
+
+```
+
+```rust title="Modules" subtitle="use keyword"
+
+use crate::some::deep::stuff::{
+  a_lovely_function,
+  a_douche_function,
+  a_trait_that_douche_accepts
+};
+
+a_lovely_function();
+
+```
+
+```rust title="Modules" subtitle="use keyword"
+
+use crate::some::deep::stuff::a_douche_function as function_shall_not_be_named;
+
+function_shall_not_be_named();
+
+```
+
+</CodeSurfer>
+
+
+---
+
+# Std::lib
+
+- Intentionally lean
+- Don't mistake it leanless as being useless
+- Consider it as an intelligent selection of common features
+- It has containers, i/o, multithreading support
+
+---
+
+# A std::lib tour
+
+- First Stop: Containers
+- It has a continous heap storage Vec which you can say it is the counterpart of vector in C++
+- Double ended queue VecDeque
+- Linked list
+- Key Value Pairs: HashMap, BTreeMap
+- Sets: HashSet, BTreeSet
+- Priority queue: BinaryHeap
+- Experimental(Lazy)
+
+---
+
+# A std::lib tour
+
+- Second stop: I/O
+- Standard input/output
+- os (Os specific functions)
+- fmt (high quality string formatting)
+- File IO
+- full TCP stack
+- full UDP stack
+
+---
+
+# A std::lib tour
+
+- Last stop: Threading
+- Threading primitives (threads, handles)
+- Sync primitives
+- atomic types
+- Multiple producer single consumer queues
+- Messaging
+- Task Wakers
+
+---
+
+# Cargo
+
+- It is the official Rust package managment tool
+- This is a gross understandment
+- Cargo knows how to compile your code
+- Cargo knows how to talk with crates.io to get you a nice crate
+- Cargo knows to handle multiple versions or targets of rustc
+- Cargo knows how to run tests
+- Cargo knows how to run benchmarks
+- It defends it attacs it does everything !!!!
+
+---
+
+<CodeSurfer theme={github}>
+
+
+```toml title-"Cargo" subtitle="Cargo.toml"
+[package]
+name = "ggez"
+description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
+version = "0.5.1"
+homepage = "http://ggez.rs"
+repository = "https://github.com/ggez/ggez"
+documentation = "https://docs.rs/ggez"
+keywords = ["ggez", "graphics", "2D", "game", "engine"]
+authors = [
+   "Rafael Epplee <raffomania@gmail.com>",
+   "Sven-Hendrik Haase <svenstaro@gmail.com>",
+   "Simon Heath <icefoxen@gmail.com>",
+]
+
+[dependencies]
+gfx = "0.18"
+gfx_core = "0.9"
+gfx_device_gl = "0.16"
+glyph_brush = "0.5"
+gfx_window_glutin = "0.30"
+```
+
+```toml 1,15
+[package]
+name = "ggez"
+description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
+version = "0.5.1"
+homepage = "http://ggez.rs"
+repository = "https://github.com/ggez/ggez"
+documentation = "https://docs.rs/ggez"
+keywords = ["ggez", "graphics", "2D", "game", "engine"]
+authors = [
+   "Rafael Epplee <raffomania@gmail.com>",
+   "Sven-Hendrik Haase <svenstaro@gmail.com>",
+   "Simon Heath <icefoxen@gmail.com>",
+]
+
+[dependencies]
+gfx = "0.18"
+gfx_core = "0.9"
+gfx_device_gl = "0.16"
+glyph_brush = "0.5"
+gfx_window_glutin = "0.30"
+```
+
+```toml
+[package]
+name = "ggez"
+description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
+version = "0.5.1"
+homepage = "http://ggez.rs"
+repository = "https://github.com/ggez/ggez"
+documentation = "https://docs.rs/ggez"
+keywords = ["ggez", "graphics", "2D", "game", "engine"]
+authors = [
+   "Rafael Epplee <raffomania@gmail.com>",
+   "Sven-Hendrik Haase <svenstaro@gmail.com>",
+   "Simon Heath <icefoxen@gmail.com>",
+]
+
+[dependencies]
+gfx = "0.18"
+gfx_core = "0.9"
+gfx_device_gl = "0.16"
+glyph_brush = "0.5"
+gfx_window_glutin = "0.30"
+```
+
+```toml 2
+[package]
+name = "ggez"
+description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
+version = "0.5.1"
+homepage = "http://ggez.rs"
+repository = "https://github.com/ggez/ggez"
+documentation = "https://docs.rs/ggez"
+keywords = ["ggez", "graphics", "2D", "game", "engine"]
+authors = [
+   "Rafael Epplee <raffomania@gmail.com>",
+   "Sven-Hendrik Haase <svenstaro@gmail.com>",
+   "Simon Heath <icefoxen@gmail.com>",
+]
+
+[dependencies]
+gfx = "0.18"
+gfx_core = "0.9"
+gfx_device_gl = "0.16"
+glyph_brush = "0.5"
+gfx_window_glutin = "0.30"
+```
+
+```toml 3:14
+[package]
+name = "ggez"
+description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
+version = "0.5.1"
+homepage = "http://ggez.rs"
+repository = "https://github.com/ggez/ggez"
+documentation = "https://docs.rs/ggez"
+keywords = ["ggez", "graphics", "2D", "game", "engine"]
+authors = [
+   "Rafael Epplee <raffomania@gmail.com>",
+   "Sven-Hendrik Haase <svenstaro@gmail.com>",
+   "Simon Heath <icefoxen@gmail.com>",
+]
+
+[dependencies]
+gfx = "0.18"
+gfx_core = "0.9"
+gfx_device_gl = "0.16"
+glyph_brush = "0.5"
+gfx_window_glutin = "0.30"
+```
+
+```toml 16:21
+[package]
+name = "ggez"
+description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
+version = "0.5.1"
+homepage = "http://ggez.rs"
+repository = "https://github.com/ggez/ggez"
+documentation = "https://docs.rs/ggez"
+keywords = ["ggez", "graphics", "2D", "game", "engine"]
+authors = [
+   "Rafael Epplee <raffomania@gmail.com>",
+   "Sven-Hendrik Haase <svenstaro@gmail.com>",
+   "Simon Heath <icefoxen@gmail.com>",
+]
+
+[dependencies]
+gfx = "0.18"
+gfx_core = "0.9"
+gfx_device_gl = "0.16"
+glyph_brush = "0.5"
+gfx_window_glutin = "0.30"
+```
+
+```toml 16[6:15]
+[package]
+name = "ggez"
+description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
+version = "0.5.1"
+homepage = "http://ggez.rs"
+repository = "https://github.com/ggez/ggez"
+documentation = "https://docs.rs/ggez"
+keywords = ["ggez", "graphics", "2D", "game", "engine"]
+authors = [
+   "Rafael Epplee <raffomania@gmail.com>",
+   "Sven-Hendrik Haase <svenstaro@gmail.com>",
+   "Simon Heath <icefoxen@gmail.com>",
+]
+
+[dependencies]
+gfx = "0.18"
+gfx_core = "0.9"
+gfx_device_gl = "0.16"
+glyph_brush = "0.5"
+gfx_window_glutin = "0.30"
+```
+
+```toml 16[6:30]
+[package]
+name = "ggez"
+description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
+version = "0.5.1"
+homepage = "http://ggez.rs"
+repository = "https://github.com/ggez/ggez"
+documentation = "https://docs.rs/ggez"
+keywords = ["ggez", "graphics", "2D", "game", "engine"]
+authors = [
+   "Rafael Epplee <raffomania@gmail.com>",
+   "Sven-Hendrik Haase <svenstaro@gmail.com>",
+   "Simon Heath <icefoxen@gmail.com>",
+]
+
+[dependencies]
+gfx = "^0.18" // Until the 1.00
+gfx_core = "0.9"
+gfx_device_gl = "0.16"
+glyph_brush = "0.5"
+gfx_window_glutin = "0.30"
+```
+
+```toml 17:18
+[package]
+name = "ggez"
+description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
+version = "0.5.1"
+homepage = "http://ggez.rs"
+repository = "https://github.com/ggez/ggez"
+documentation = "https://docs.rs/ggez"
+keywords = ["ggez", "graphics", "2D", "game", "engine"]
+authors = [
+   "Rafael Epplee <raffomania@gmail.com>",
+   "Sven-Hendrik Haase <svenstaro@gmail.com>",
+   "Simon Heath <icefoxen@gmail.com>",
+]
+
+[dependencies]
+gfx = "^0.18"
+some-crate = { version = "1.0", registry = "my-registry" }
+rand = { git = "https://github.com/rust-lang-nursery/rand" }
+gfx_core = "0.9"
+gfx_device_gl = "0.16"
+glyph_brush = "0.5"
+gfx_window_glutin = "0.30"
+```
+
+```toml 17:18
+[package]
+name = "ggez"
+description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
+version = "0.5.1"
+homepage = "http://ggez.rs"
+repository = "https://github.com/ggez/ggez"
+documentation = "https://docs.rs/ggez"
+keywords = ["ggez", "graphics", "2D", "game", "engine"]
+authors = [
+   "Rafael Epplee <raffomania@gmail.com>",
+   "Sven-Hendrik Haase <svenstaro@gmail.com>",
+   "Simon Heath <icefoxen@gmail.com>",
+]
+
+[dependencies]
+gfx = "^0.18"
+some-crate = { version = "1.0", registry = "my-registry" }
+rand = { git = "https://github.com/rust-lang-nursery/rand", branch="someExperimentalBranch" }
+gfx_core = "0.9"
+gfx_device_gl = "0.16"
+glyph_brush = "0.5"
+gfx_window_glutin = "0.30"
+```
+
+</CodeSurfer>
+
+
+---
+
+## The End

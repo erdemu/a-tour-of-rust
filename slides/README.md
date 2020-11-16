@@ -1,4 +1,4 @@
-# How to setup 
+# How to setup
 
 ## Install pre-requisites
 
@@ -52,3 +52,7 @@ yarn start
 ```
 
 ## Edit your slides
+
+## Fixes for code surfer
+
+https://github.com/jxnblk/mdx-deck/pull/739
