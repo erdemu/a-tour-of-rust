@@ -162,67 +162,6 @@ import borrowing from "./resources/images/borrowing.png";
 />
 
 ---
-
-<CodeSurfer theme={GitHub}>
-
-```rust title="Ownership example"
-fn uppercase(mut input: String) {
-    input = input.to_uppercase();
-}
-
-fn main() {
-    let mut output = String::from("hello world.");
-    uppercase(output);
-}
-```
-
-```rust 8 title="Ownership example"
-fn uppercase(mut input: String) {
-    input = input.to_uppercase();
-}
-
-fn main() {
-    let mut output = String::from("hello world.");
-    uppercase(output);
-    println!("{}", output);
-}
-```
-
-```rust
-error[E0382]: borrow of moved value: `output`
- --> src/main.rs:8:18
-  |
-6 |     let output = String::from("hello world.");
-  |         ------ move occurs because `output` has type `std::string::String`, which does not implement the `Copy` trait
-7 |     uppercase(output);
-  |               ------ value moved here
-8 |     println!("{}", output);
-  |                    ^^^^^^ value borrowed here after move
-
-error: aborting due to previous error
-
-For more information about this error, try `rustc --explain E0382`.
-error: could not compile `ownership`.
-
-To learn more, run the command again with --verbose.
-
-```
-
-```rust 1,7 title="Borrowing example"
-fn uppercase(input: &mut String) {
-    *input = input.to_uppercase();
-}
-
-fn main() {
-    let mut output = String::from("hello world.");
-    uppercase(&mut output);
-    print!("{}", output);
-}
-```
-
-</CodeSurfer>
-
----
 =======
 # Enums
 
@@ -507,6 +446,7 @@ thread 'main' panicked at 'Oh noes!', src/main.rs:2:5
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 ```
+
 ```rust title="Result type"
 enum Result<T,E> {
 	Ok(T),
@@ -514,7 +454,7 @@ enum Result<T,E> {
 }
 ```
 
-```rust title="Error example"
+```rust title="Error handling example"
 use std::fs::File;
 
 fn main() {
@@ -528,14 +468,331 @@ fn main() {
 
 ```
 
+```rust
+thread 'main' panicked at 'Problem opening the file: Os { code: 2, kind: NotFound, message: "No such file or directory" }', src/main.rs:8:23
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+```
+```rust title="Error handling example"
+let x = get_weather("Veldhoven").or(Ok(default));
+```
+
+```rust
+enum Option<T> {
+	Some(T),
+	None
+}
+```
+
 </CodeSurfer>
 
 ---
-6. polymorphism
+# Polymorphism
 ---
-7. concurrency
+
+<CodeSurfer theme={GitHub}>
+
+```rust title="Traits"
+trait Sound {
+	fn make_noise(&Self)-> String;
+}
+```
+
+```rust title="Traits"
+trait Sound {
+	fn make_noise(&Self)-> String;
+}
+
+struct Dog { name: String };
+
+impl Sound for Dog {
+	fn make_noise(&Self) -> String {
+		return String::from("Woof!");
+	}
+}
+
+struct Cat { name: String };
+
+impl Sound for Cat {
+	fn make_noise(&Self) -> String {
+		return String::from("Meow!");
+	}
+}
+
+```
+</CodeSurfer>
+
+<CodeSurfer theme={GitHub}>
+
+```rust title="Trait objects"
+trait Draw {
+	fn draw(&self);
+}
+```
+
+```rust title="Trait objects"
+trait Draw {
+	fn draw(&self);
+}
+
+struct Canvas {
+	canvas: Vec<Draw>,
+}
+```
+
+```rust title="Trait objects"
+trait Draw {
+	fn draw(&self);
+}
+
+struct Canvas {
+	canvas: Vec<Box<dyn Draw>>,
+}
+
+```
+
+```rust title="Generic functions"
+fn min(value1: u32, value2: u32) -> u32 {
+	if value1 <= value2 {
+		value1
+	} else {
+		value2
+	}
+}
+
+```
+
+```rust title="Generic functions"
+fn min<T>(value1: T, value2: T) -> T {
+	if value1 <= value2 {
+		value1
+	} else {
+		value2
+	}
+}
+```
+
+```rust title="Generic functions"
+fn min<T: Ord>(value1: T, value2: T) -> T {
+	if value1 <= value2 {
+		value1
+	} else {
+		value2
+	}
+}
+```
+
+</CodeSurfer>
+
 ---
-8. Unsafe
+# Concurrency
+---
+<CodeSurfer theme={GitHub}>
+
+```rust title="Fork/join"
+fn proces_files(files: Vec<String>) -> io::Result<()> {
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 1 title="Fork/join"
+fn proces_files(files: Vec<String>) -> io::Result<()> {
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 5 title="Fork/join"
+fn proces_files(files: Vec<String>) -> io::Result<()> {
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 7 title="Fork/join"
+fn proces_files(files: Vec<String>) -> io::Result<()> {
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 10:12,16 title="Fork/join"
+fn proces_files(files: Vec<String>) -> io::Result<()> {
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 1 title="Sharing immutable data"
+fn process_files(worklist: Vec<String>, config: &Configuration){
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist, configuration))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 1,3,12 title="Sharing immutable data"
+use std::sync::Arc;
+
+fn process_files(worklist: Vec<String>, config: Arc<Configuration>){
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		let config_for_child = config.clone();
+
+		thread_handles.push(
+				spawn(move || process_files(worklist, config_for_child))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 1,3,12 title="Sharing mutable data"
+fn process_files(worklist: Vec<String>, config: Arc<Mutex<Configuration>>){
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		let config_for_child = config.clone();
+
+		thread_handles.push(
+				spawn(move || process_files(worklist, config_for_child))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust title="Sharing mutable data"
+let mut config = config_for_child.lock().unwrap();
+```
+
+</CodeSurfer>
+
+---
+
+# Unsafe
+
+---
+
+<CodeSurfer 7:11 theme={GitHub}>
+
+```rust title="Fork/join"
+pub fn push(&mut self, value: T) {
+	// This will panic or abort if we would allocate > isize::MAX bytes
+	// or if the length increment would overflow for zero-sized types.
+	if self.len == self.buf.capacity() {
+		self.reserve(1);
+	}
+	unsafe {
+		let end = self.as_mut_ptr().add(self.len);
+		ptr::write(end, value);
+		self.len += 1;
+	}
+}
+
+```
+</CodeSurfer>
+
 ---
 
 # Macros!

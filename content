@@ -24,6 +24,8 @@ My name is Micha Hergarden and I am part of the SICS team at EUV source. I have 
 
 Our aim for tonight is to give you a short tour of the Rust programming language and to show in what aspects it differs from its cousins c and c++.
 
+### NEXT SHEET ###
+
 1. Example C++ memory safety
 ------------------
 Will this work? The answer is: maybe. In some cases the vector will allocate new memory to enlarge and move its elements to this newly allocated block. The problem is that the reference 'ref' is then pointing into unused memory. This opens the door for segmentation faults or information leaking.
@@ -32,6 +34,7 @@ The CWE website tracks common weaknesses in software development (https://cwe.mi
 
 This seems to suggest that even with good engineers working on the code, it is still difficult to prevent these types of errors from occuring. A common denominator for these issues is the use of languages like C or C++. These languages offer runtime efficiency and low level control, but have the trade off of requiring rigorous testing and code checking to make sure no unintended issues are introduced. In contrast, languages with a garbage collector offer better protection from some of these types of issues but have the trade off of lacking the low level control needed in certain application domains, i.e. realtime systems. Enter Rust...
 
+### NEXT SHEET ###
 2. Origin of Rust
 ------------------
 
@@ -39,6 +42,7 @@ In 2006 a Mozilla Research employee named Graydon Hoare started the Rust languag
 
 Rust gained popularity outside of Mozilla and has earned the honour of being the "most loved programming language" on the Stack Overflow developer survey since 2016. The industry also started adopting the language and according to the project page around 148 companies are using Rust in production code. Microsoft and Google have shown serious interest and researched the language for use in security critical components.
 
+### NEXT SHEET ###
 3. Linear typesystem, ownership, borrowing and lifetimes. (take image from thesis)
 ------------------
 
@@ -46,30 +50,31 @@ The main property that differentiates Rust from languages like C and C++ is its 
 
 "Linear type systems ensure that every variable is used exactly once by allowing exchange but not weakening or contraction."
 
-The key words here are 'used exactly once'. In this context this means that data in a certain memory region representing an object can be associated with one name only. To clarify this further I will explain this in terms of a c++ string object. In c++ a string is represented by two structures. First a structure that is associated with the string variable name. This structure contains a pointer to the second structure, a length and a capacity. The length is the number of characters in the string data, and the capacity is the maximum number of characters that can be held in the string data. The pointer points to the actual characters that make up the string and are stored in the heap.
+The key words here are 'used exactly once'. In this context this means that data in a certain memory region representing an object can be associated with one name only. To clarify this further I will explain this in terms of a c++ string object. 
 
-In c++ you can make a shallow copy, meaning that you create a copy of the first struct and associate that with a different name. The pointer to the heap data is identical to the first string object. The advantage of that is that you do not need to copy a potentially large amount of heap data. The drawback is that the administration in both variables need to be kept in sync. In a linear typesystem, this is considered double use and thus prohibited. When a new variable is associated with the data, the initial struct is marked 'invalid'. Any attempt to access the data via the first variable will result in a compile time error. This concept is called 'Ownership' and can be compared to a person owning a physical object like a book.
+### NEXT SHEET ###
+
+In c++ a string is represented by two structures. First a structure that is associated with the string variable name. This structure contains a pointer to the second structure, a length and a capacity. The length is the number of characters in the string data, and the capacity is the maximum number of characters that can be held in the string data. The pointer points to the actual characters that make up the string and are stored in the heap.
+
+### NEXT SHEET ###
+
+In c++ you can make a shallow copy, meaning that you create a copy of the first struct and associate that with a different name. The pointer to the heap data is identical to the first string object. The advantage of that is that you do not need to copy a potentially large amount of heap data. The drawback is that the administration in both variables need to be kept in sync.
+
+
+### NEXT SHEET ###
+
+In a linear typesystem, this is considered double use and thus prohibited. When a new variable is associated with the data, the initial struct is marked 'invalid'. Any attempt to access the data via the first variable will result in a compile time error. This concept is called 'Ownership' and can be compared to a person owning a physical object like a book.
 
 To summarize: at any given time, a value must have an owner and can have only one owner. When the owner is destroyed, the value is also destroyed.
 
+### NEXT SHEET ###
 In Rust it is possible to associate a second variable name to the string by means of a reference. The reference contains then a pointer to the first variable, which in turn points to the actual string data. This referencing mechanism is called 'Borrowing' and can be compared to a person lending a book to a friend. The friend may read the book, as long as the book is returned to the owner in due time. By default, a reference is immutable. Any attempt to modify the value through a reference will lead to a compile time error. A refence can explicitly be made mutable, but then there can only be a single reference.
 
 To summarize: at any given time there may be many immutable references to a value or a single mutable reference. A reference must always be valid.
 
-Let's view this in a piece of Rust code.
-
-In the first example we pass a string value to a function that will uppercase it internally. The function takes the string by value and therefore the ownership of the string is transferred to the function (or rather the variable name in the argument). 
-
-
-Any attempt to refer to the string after calling the function will result in a compilation error:
-
-The output from the compiler is:
-
-When we pass the same string by reference, the ownership is not transferred but the function is able to borrow the string. The main function can still use the string after the function returns:
-
-
 A nice consequence of using linear types is that there is no need for a garbage collector. The compiler can deduce which variable a value belongs to and what the scope of that variable is. In Rust this scope is called the Lifetime of a variable. The absence of a garbage collector lets Rust enter the domain of languages like c and c++ and this is why it is often touted as a system programming language. In the event that you really do need a copy of a value, you can create one by calling the 'clone()' method on a type. This creates a deep copy of the value.
 
+### NEXT SHEET ###
 4. Enums
 ------------------
 
@@ -77,12 +82,17 @@ A nice consequence of using linear types is that there is no need for a garbage 
 
 5. Error Handling (Don't panic!)
 ------------------
+### NEXT SHEET ###
 
 Rust divides error handling in two categories: non-recoverable and recoverable. A non-recoverable error is an condition in the program that should never happen and is cause for the program to end prematurely. An example of that would be a division by zero as that leads to an undefined result. In Rust such an error is called a 'panic'. In the event of a panic, the program halts and a default handler is called. Rust will start unwinding the stack and print out a stacktrace for further analysis. One thing to note is that a panic will stay within the boundaries of a thread. So if one thread panics, it does not mean that your whole program will crash. Instead, the thread will abort and the parent thread will be able to retrieve a thread result. In this case the result will be an error. This makes for more robust programs and allows the program to continue the other threads.
+
+### NEXT SHEET ###
 
 An example of a panic situation happens for instance when we explicitly call the panic macro:
 
 When the program us run with the RUST_BACKTRACE variable set, we will see a full backtrace, including the panic handler itself. In a lot of cases, the output from the less verbose panic is clear enough to deduce what caused the program to terminate. And when the panic macro is used, the programmer often provides an explicit error message to be printed out.
+
+### NEXT SHEET ###
 
 Let's move on to recoverable errors. The Rust language does not have an exception mechanism. Instead it relies on return values. The advantage of using these values is that the caller must do something with them. It is not possible to ignore the error by accident.
 
@@ -95,16 +105,20 @@ enum Result<T,E> {
 
 The Result enum contains either the value of Ok, which can contain a result type, which should be the result of the function. It also contains a type for the Error case, which is used to attach information about the error. Let's look at an example of its use:
 
+### NEXT SHEET ###
+
 Here we use a so called match operator to distinguish between the good case and the error case. In the event of an error we turn it into a panic and print out the error. Here is the output in the event of a missing file:
 
-thread 'main' panicked at 'Problem opening the file: Os { code: 2, kind: NotFound, message: "No such file or directory" }', src/main.rs:8:23
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+### NEXT SHEET ###
 
 As we can see here the error has a kind and a message to convey additional information about what happened. The match statement above is still a bit verbose, so it is possible to write a shorthand for that using the available methods in the Result type:
 
-let x = get_weather("Veldhoven").or(Ok(default));
+### NEXT SHEET ###
 
 In this case we get a weather report for Veldhoven if all goes well, or we get a result containing a default report in case of a failure. The result type contains more functions to tweak the error case, such as returning a value instead of a result, calling a function in the event of an error to produce a default and producing a mutable value. Have look at the reference documentation if you are interested in this topic.
+
+
+### NEXT SHEET ###
 
 An alternative to the Result type is the option type. This is used when it is ok when there might not be a value to return. Instead of returning a NULL which could go unchecked by the caller, the Option type must be handled. This forces the caller to expect this case as well.
 
@@ -115,32 +129,17 @@ enum Option<T> {
 
 6. Polymorphism
 ------------------
+### NEXT SHEET ###
 
+### NEXT SHEET ###
 Polymorphism in Rust is enabled by the use of Traits, which are similar to Interfaces in Java or Abstract classed in C++. Rust does not have classes or inheritance, but you can create structs and add methods to them by implementing a trait which declares the methods. An example of a trait and implementation would be creating a number of animals:
 
-trait Sound {
-	fn make_noise(&Self)-> String;
-}
-
+### NEXT SHEET ###
 A dog and cat could then implement this trait as follows:
 
-struct Dog { name: String };
-
-impl Sound for Dog {
-	fn make_noise(&Self) -> String {
-		return String::from("Woof!");
-	}
-}
-
-struct Cat { name: String };
-
-impl Sound for Cat {
-	fn make_noise(&Self) -> String {
-		return String::from("Meow!");
-	}
-}
-
 Here we define the trait Sound, which can be implemented to give a dog or a cat the ability to make a sound. Traits resemble abilities and represent something that a type can do. In Rust you must have a trait in your scope in order to implement its methods. The reason for this is that it could lead to naming conflicts otherwise. We will see later how a trait can be brought into scope in the section on modules. A nice feature of this system is that it allows you to even extend build in types like an int 32 with your own traits.
+
+### NEXT SHEET ###
 
 Trait objects
 
@@ -151,19 +150,25 @@ trait Draw {
 }
 
 If we want to make a canvas with a vector of different elements we cannot do this:
+### NEXT SHEET ###
 
 struct Canvas {
 	canvas: Vec<Draw>,
 }
 
-The reason is that Rust wants to know the size of the elements at compile time and some elements might not even be known by then, for instance if we offer this as a library that may be extended by others. The way Rust solves this is by means of a trait object. A trait object is an object that contains at least two pointers: one pointing to the concrete type implementing the trait and one to the vtable that contains pointers to implementations of the trait.
+The reason is that Rust wants to know the size of the elements at compile time and some elements might not even be known by then, for instance if we offer this as a library that may be extended by others. The way Rust solves this is by means of a trait object. A trait object is an auxiliary object that contains at least two pointers: one pointing to the concrete type implementing the trait and one to the vtable that contains pointers to implementations of the trait.
+
 This is denoted in Rust as follows:
+
+### NEXT SHEET ###
 
 struct Canvas {
 	canvas: Vec<Box<dyn Draw>>,
 }
 
-Here we use a Box, which is a smart pointer which will be converted to a trait object. The dyn keyword tells Rust that we are talking about a trait instead of a struct type. In this way we can store many types of elements in the canvas. And trait objects allow us to extend an existing type with multiple vtables, i.e. implement multiple traits.
+Here we use a Box, which is a smart pointer which will be converted to a trait object on the fly. The dyn keyword tells Rust that we are talking about a trait instead of a struct type. In this way we can store many types of elements in the canvas. And trait objects allow us to extend an existing type with multiple vtables, i.e. implement multiple traits.
+
+### NEXT SHEET ###
 
 Generic functions
 
@@ -177,6 +182,7 @@ fn min(value1: u32, value2: u32) -> u32 {
 	}
 }
 
+### NEXT SHEET ###
 This of course only works for u32 types, so we want to make it more generic:
 
 fn min<T>(value1: T, value2: T) -> T {
@@ -188,6 +194,8 @@ fn min<T>(value1: T, value2: T) -> T {
 }
 
 The capital T denotes any type with which this function will be called. Like templates, Rust will generate the machine code compile time for each type. There is still one problem with this implementation however. Not all types can be compared. So we need to add some sort of restriction on the type that can be used. Such a restriction is called a bound in Rust and can be added like so:
+
+### NEXT SHEET ###
 
 fn min<T: Ord>(value1: T, value2: T) -> T {
 	if value1 <= value2 {
@@ -201,90 +209,49 @@ Now only the right types can be used with this function. It is possible to add m
 
 It can be tricky to decide when to use trait objects and when to use generics. Generics may cause code bloat, because there will be code generated for each type the function is called with. And the generated code may be inlined. The upshot however is that there is practically no runtime overhead. This is in contrast with trait objects, which do have some indirection overhead at runtime, but will produce no code bloat.
 
+### NEXT SHEET ###
+
 7. Concurrency
 ------------------
 
 The strength of the linear typesystem lies in its application in concurrent programming. Concurrent programming has numerous pitfalls such as data races where multiple threads mutate the same value in memory at interleaved execution, deadlocks and livelocks. These pitfalls only come into play when you have shared mutable state. The common solution to this is to remove mutability by adding locks like mutexes. Rust however tries to solve this by removing the shared part. Let's first look at the paradigms that Rust supports.
 
+### NEXT SHEET ###
+
 Fork/Join
 
 The simplest concurrent model that we can implement is having multiple threads that do not share data. Here is an example of such a program:
 
-fn proces_files(files: Vec<String>) -> io::Result<()> {
-	const NTHREADS: usize = 8;
 
-	// Break up the vector in multiple blocks
-	let worklists = split_vec_into_chunks(files, NTHREADS);
+### NEXT SHEET ###
+There a few things to unpack here, so let's go through them one by one. The return value of this function is an io::Result value. 
 
-	let mut thread_handles = vec![];
+### NEXT SHEET ###
+The functions starts by splitting up a vector in multiple blocks so that each thread can work on its own block. 
 
-	for worklist in worklists {
-		thread_handles.push(
-				spawn(move || process_files(worklist))
-				);
-	};
 
-	for handle in thread_handles {
-		handle.join().unwrap()?;
-	}
-}
+### NEXT SHEET ###
+We then create an empty vector of handles, using a macro. More on macros later on in the presentation. 
 
-There a few things to unpack here, so let's go through them one by one. The return value of this function is an io::Result value. The functions starts by splitting up a vector in multiple blocks so that each thread can work on its own block. We then create an empty vector of handles, using a macro. More on macros later on in the presentation. We then loop through the list of lists and create a thread for each one using the spawn method. The argument of this method is the keyword 'move' to indicate a transfer of ownership of a worklist to the thread. This is followed by a closure, denoted by the pipe symbols. A closure is a lightweight function where the pipe symbols surround the arguments (none in this case), followed by the body, which is processing the actual list.
+### NEXT SHEET ###
+We then loop through the list of lists and create a thread for each one using the spawn method. The argument of this method is the keyword 'move' to indicate a transfer of ownership of a worklist to the thread. This is followed by a closure, denoted by the pipe symbols. A closure is a lightweight function where the pipe symbols surround the arguments (none in this case), followed by the body, which is processing the actual list.
 Finally we loop through the list of handles and wait for each thread to finish before continuing. The question mark operator helps propagating a possible io::Result to the parent thread.
 
 This type of parallellism is fairly easy to follow, but it does have the possibility of an unequal load balance in the threads. For instance, the proces_files maybe slow on large files. A thread with a worklist containing only large files will then be slower to finish than a thread with small files. This could leave one thread finishing early while it could help the other thread out.
 
 One thing to note is that if we would handle the io::Result here, the program as a whole would not panic in the event of a single thread panic. This allows the main program to collect results even if one thread would fail to do so. In this case the error is explicitly propagated and thus the whole program would panic.
 
+### NEXT SHEET ###
 Sharing immutable data
 
 Now suppose we want to process the files using some shared configration file. We could extend the proces_files function with a reference to this file:
 
-fn process_files(worklist: Vec<String>, config: &Configuration){
-	const NTHREADS: usize = 8;
-
-	// Break up the vector in multiple blocks
-	let worklists = split_vec_into_chunks(files, NTHREADS);
-
-	let mut thread_handles = vec![];
-
-	for worklist in worklists {
-		thread_handles.push(
-				spawn(move || process_files(worklist, configuration))
-				);
-	};
-
-	for handle in thread_handles {
-		handle.join().unwrap()?;
-	}
-}
-
 This will not compile, because we try to move ownership in the spawn call, and we cannot transfer ownership of a referenced object. The reason for this is that each thread will have its own independent lifetime. To Rust there is no guarantee that the child will never outlive its parent thread. It therefore assumes the worst and forbids sharing a reference in this way.
+
+### NEXT SHEET ###
 
 The solution to this is to use a so called Arc, Atomic Reference Count.
 
-use std::sync::Arc;
-
-fn process_files(worklist: Vec<String>, config: Arc<Configuration>){
-	const NTHREADS: usize = 8;
-
-	// Break up the vector in multiple blocks
-	let worklists = split_vec_into_chunks(files, NTHREADS);
-
-	let mut thread_handles = vec![];
-
-	for worklist in worklists {
-		let config_for_child = config.clone();
-
-		thread_handles.push(
-				spawn(move || process_files(worklist, &config_for_child))
-				);
-	};
-
-	for handle in thread_handles {
-		handle.join().unwrap()?;
-	}
-}
 
 First we import the Arc type from the sync module by means of the use statement. The configuration is then wrapped in an Arc. We create a clone of the Arc for each child thread. The clone increments the reference count in an atomic thread safe manner. Each thread will receive the cloned arc and is able to read from the configuration. The Configuration object can only be destroyed when the reference count is set to zero, which can only happen when all threads have finished. So even if the parent would bail out first, the childs will still have access to the configuration.
 
@@ -302,9 +269,11 @@ A channel can have multiple senders attached to it. If you want this, you clone 
 
 Send and Sync
 
-Not all types can be sent across threads. For instance a non-atomic reference counter cannot be sent because it might introduce a data race. In order to determine what can and what cannot be sent, the so called marker trait Send is automatically derived by the compiler on a type. This happens only when it is composed solely of Send types. A marker trait has no methods, it only exists to mark. A type is Send when it can be moved across threads.
+Not all types can be sent across threads. For instance a non-atomic reference counter cannot be sent because it might introduce a data race. In order to determine what can and what cannot be sent, the so called marker trait Send is automatically derived by the compiler on a type. This happens only when it is composed solely of Send types. A marker trait has no methods, it only exists to mark. A type is Send when it can be moved across threads. 
 
-Types that can be shared across threads with a non mutable reference are automatically marked with the Sync trait. Such types often use mutability internally and are not thread safe.
+Types that can be shared across threads with a non mutable reference are automatically marked with the Sync trait. 
+
+### NEXT SHEET ###
 
 Shared mutable state
 
@@ -312,37 +281,15 @@ In the event that you do need to share mutable data, Rust offers a mutex type. A
 
 We could make our configuration mutable accross theads like so:
 
-fn process_files(worklist: Vec<String>, config: Arc<Mutex<Configuration>>){
-	const NTHREADS: usize = 8;
-
-	// Break up the vector in multiple blocks
-	let worklists = split_vec_into_chunks(files, NTHREADS);
-
-	let mut thread_handles = vec![];
-
-	for worklist in worklists {
-		let config_for_child = config.clone();
-
-		thread_handles.push(
-				spawn(move || process_files(worklist, &config_for_child))
-				);
-	};
-
-	for handle in thread_handles {
-		handle.join().unwrap()?;
-	}
-}
 
 The process files function then accesses the value like so:
-
-let mut config = config_for_child.lock().unwrap();
+### NEXT SHEET ###
 
 The mutex is automatically released when the function finishes and its scope ends. Unfortunately, mutexes in Rust do suffer from deadlocks, like any other mutex. One way of getting a deadlock it trying to aqcuire a lock while still within a lock. Rust mutexes are non recursive. Another possibility is to block on multiple mutexes. The linear typesystem cannot protect you from this.
 
 Finally, if a thread panics while holding a lock it will poison the mutex. This means that after that all calls to lock will fail as it may not be safe to use the value within. Rust offers other mechanisms, but we will not look into those further.
 
-
-
+### NEXT SHEET ###
 8. Unsafe
 --------------------
 
@@ -358,18 +305,8 @@ The unsafe keyword does not disable Rusts basic rules. We stil have type checks,
 
 The Rust standard library contains numerous pieces of code that are marked unsafe for various reasons. Here is one such example from the Vector code:
 
-pub fn push(&mut self, value: T) {
-	// This will panic or abort if we would allocate > isize::MAX bytes
-	// or if the length increment would overflow for zero-sized types.
-	if self.len == self.buf.capacity() {
-		self.reserve(1);
-	}
-	unsafe {
-		let end = self.as_mut_ptr().add(self.len);
-		ptr::write(end, value);
-		self.len += 1;
-	}
-}
+### NEXT SHEET ###
+
 
 The push function lets users add a new element to a vector as long as there is still free room. The first part of the function checks if the length is equal to the capacity and reserves more space if it needs to. The second part has been marked unsafe as it dereferences a raw pointer for instance. Here the unsafe keyword tells the compiler that it should trust the author for the correctness of the code. In this case the efficiency of the function was deemed important enough to implement it as an unsafe block to avoid boundary checks. The part that makes is unsafe is the value of end. This is however derived from the self.len value, which in turn is checked in the safe block of this function. In that sense the function is still upholding defined behavior.
 
@@ -378,4 +315,3 @@ That is actually what the unsafe keyword is meant to do: it turns undefined beha
 Unsafe in Rust is a critical part to be able to write efficient code in the standard library, to be able to talk to the operating system and to implement some of the synchronization primitives used for concurrency.
 
 One other thing I would like to mention here is the Rustbelt project. This project aims to perform a formal verification of the Rust standard library and prove it correct.
-
