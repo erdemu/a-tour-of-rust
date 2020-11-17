@@ -5,6 +5,8 @@ import { default as style } from "./resources/theme";
 import { default as SlideFooter } from "./resources/custom_layout";
 
 import "prismjs/components/prism-rust";
+import "prismjs/components/prism-toml";
+
 export const theme = style;
 
 import poster from "./resources/images/poster.png";
@@ -22,6 +24,9 @@ import poster from "./resources/images/poster.png";
 
 ---
 <CodeSurfer theme={GitHub}>
+
+<CodeSurfer theme={github}>
+
 
 ```cpp title="Memory safety example"
 #include<iostream>
@@ -69,6 +74,24 @@ int main(int argc, char *argv[])
 
 </CodeSurfer>
 
+
+---
+
+# https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html
+
+import cwe from "./resources/images/weaknesses.png";
+
+<img
+  src={cwe}
+  style={{
+    width: "80%",
+    height: "80%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }}
+/>
+
 ---
 
 # Origin of rust
@@ -91,6 +114,7 @@ import originofrust from "./resources/images/originofrust.png";
 # Linear typesystem
 
 > "Linear type systems ensure that every variable is used exactly once by allowing exchange but not weakening or contraction."
+>
 > <cite>Benjamin Pierce</cite>
 
 ---
@@ -146,7 +170,7 @@ import ownership3 from "./resources/images/ownership3.png";
 
 ---
 
-# Borrowing 
+# Borrowing
 
 import borrowing from "./resources/images/borrowing.png";
 
@@ -163,67 +187,6 @@ import borrowing from "./resources/images/borrowing.png";
 
 ---
 
-<CodeSurfer theme={GitHub}>
-
-```rust title="Ownership example"
-fn uppercase(mut input: String) {
-    input = input.to_uppercase();
-}
-
-fn main() {
-    let mut output = String::from("hello world.");
-    uppercase(output);
-}
-```
-
-```rust 8 title="Ownership example"
-fn uppercase(mut input: String) {
-    input = input.to_uppercase();
-}
-
-fn main() {
-    let mut output = String::from("hello world.");
-    uppercase(output);
-    println!("{}", output);
-}
-```
-
-```rust
-error[E0382]: borrow of moved value: `output`
- --> src/main.rs:8:18
-  |
-6 |     let output = String::from("hello world.");
-  |         ------ move occurs because `output` has type `std::string::String`, which does not implement the `Copy` trait
-7 |     uppercase(output);
-  |               ------ value moved here
-8 |     println!("{}", output);
-  |                    ^^^^^^ value borrowed here after move
-
-error: aborting due to previous error
-
-For more information about this error, try `rustc --explain E0382`.
-error: could not compile `ownership`.
-
-To learn more, run the command again with --verbose.
-
-```
-
-```rust 1,7 title="Borrowing example"
-fn uppercase(input: &mut String) {
-    *input = input.to_uppercase();
-}
-
-fn main() {
-    let mut output = String::from("hello world.");
-    uppercase(&mut output);
-    print!("{}", output);
-}
-```
-
-</CodeSurfer>
-
----
-=======
 # Enums
 
 An enum in Rust is a type that represents data that is one of several possible variants. Each variant in the enum can optionally have data associated with it
@@ -486,7 +449,25 @@ import dontpanic from "./resources/images/dontpanic.jpeg";
 
 ---
 
-<CodeSurfer theme={GitHub}>
+# Error handling
+
+import dontpanic from "./resources/images/dontpanic.jpeg";
+
+<img
+  src={dontpanic}
+  style={{
+    width: "50%",
+    height: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }}
+/>
+
+---
+
+<CodeSurfer theme={github}>
+
 
 ```rust title="Panic example"
 fn do_something() {
@@ -507,6 +488,7 @@ thread 'main' panicked at 'Oh noes!', src/main.rs:2:5
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 ```
+
 ```rust title="Result type"
 enum Result<T,E> {
 	Ok(T),
@@ -514,7 +496,7 @@ enum Result<T,E> {
 }
 ```
 
-```rust title="Error example"
+```rust title="Error handling example"
 use std::fs::File;
 
 fn main() {
@@ -528,14 +510,350 @@ fn main() {
 
 ```
 
+```rust
+thread 'main' panicked at 'Problem opening the file: Os { code: 2, kind: NotFound, message: "No such file or directory" }', src/main.rs:8:23
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+```
+
+```rust title="Error handling example"
+let x = get_weather("Veldhoven").or(Ok(default));
+```
+
+```rust
+enum Option<T> {
+	Some(T),
+	None
+}
+```
+
 </CodeSurfer>
 
+
 ---
-6. polymorphism
+
+# Polymorphism
+
 ---
-7. concurrency
+
+<CodeSurfer theme={github}>
+
+
+```rust title="Traits"
+trait Sound {
+	fn make_noise(&Self)-> String;
+}
+```
+
+```rust title="Traits"
+trait Sound {
+	fn make_noise(&Self)-> String;
+}
+
+struct Dog { name: String };
+
+impl Sound for Dog {
+	fn make_noise(&Self) -> String {
+		return String::from("Woof!");
+	}
+}
+
+struct Cat { name: String };
+
+impl Sound for Cat {
+	fn make_noise(&Self) -> String {
+		return String::from("Meow!");
+	}
+}
+
+```
+
+</CodeSurfer>
+
+
 ---
-8. Unsafe
+
+<CodeSurfer theme={github}>
+
+
+```rust title="Trait objects"
+trait Draw {
+	fn draw(&self);
+}
+```
+
+```rust title="Trait objects"
+trait Draw {
+	fn draw(&self);
+}
+
+struct Canvas {
+	canvas: Vec<Draw>,
+}
+```
+
+```rust title="Trait objects"
+trait Draw {
+	fn draw(&self);
+}
+
+struct Canvas {
+	canvas: Vec<Box<dyn Draw>>,
+}
+
+```
+
+```rust title="Generic functions"
+fn min(value1: u32, value2: u32) -> u32 {
+	if value1 <= value2 {
+		value1
+	} else {
+		value2
+	}
+}
+
+```
+
+```rust title="Generic functions"
+fn min<T>(value1: T, value2: T) -> T {
+	if value1 <= value2 {
+		value1
+	} else {
+		value2
+	}
+}
+```
+
+```rust title="Generic functions"
+fn min<T: Ord>(value1: T, value2: T) -> T {
+	if value1 <= value2 {
+		value1
+	} else {
+		value2
+	}
+}
+```
+
+</CodeSurfer>
+
+
+---
+
+# Concurrency
+
+---
+
+<CodeSurfer theme={github}>
+
+
+```rust title="Fork/join"
+fn proces_files(files: Vec<String>) -> io::Result<()> {
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 1 title="Fork/join"
+fn proces_files(files: Vec<String>) -> io::Result<()> {
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 5 title="Fork/join"
+fn proces_files(files: Vec<String>) -> io::Result<()> {
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 7 title="Fork/join"
+fn proces_files(files: Vec<String>) -> io::Result<()> {
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 10,11,12,16 title="Fork/join"
+fn proces_files(files: Vec<String>) -> io::Result<()> {
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 1 title="Sharing immutable data"
+fn process_files(worklist: Vec<String>, config: &Configuration){
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		thread_handles.push(
+				spawn(move || process_files(worklist, configuration))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 1,3,12 title="Sharing immutable data"
+use std::sync::Arc;
+
+fn process_files(worklist: Vec<String>, config: Arc<Configuration>){
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		let config_for_child = config.clone();
+
+		thread_handles.push(
+				spawn(move || process_files(worklist, config_for_child))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust 1,3,12 title="Sharing mutable data"
+fn process_files(worklist: Vec<String>, config: Arc<Mutex<Configuration>>){
+	const NTHREADS: usize = 8;
+
+	// Break up the vector in multiple blocks
+	let worklists = split_vec_into_chunks(files, NTHREADS);
+
+	let mut thread_handles = vec![];
+
+	for worklist in worklists {
+		let config_for_child = config.clone();
+
+		thread_handles.push(
+				spawn(move || process_files(worklist, config_for_child))
+				);
+	};
+
+	for handle in thread_handles {
+		handle.join().unwrap()?;
+	}
+}
+```
+
+```rust title="Sharing mutable data"
+let mut config = config_for_child.lock().unwrap();
+```
+
+</CodeSurfer>
+
+
+---
+
+# Unsafe
+
+---
+
+<CodeSurfer theme={github}>
+
+
+```rust 7,8,9,10,11 title="Fork/join"
+pub fn push(&mut self, value: T) {
+	// This will panic or abort if we would allocate > isize::MAX bytes
+	// or if the length increment would overflow for zero-sized types.
+	if self.len == self.buf.capacity() {
+		self.reserve(1);
+	}
+	unsafe {
+		let end = self.as_mut_ptr().add(self.len);
+		ptr::write(end, value);
+		self.len += 1;
+	}
+}
+
+```
+
+</CodeSurfer>
+
+
 ---
 
 # Macros!
@@ -1033,7 +1351,7 @@ function_shall_not_be_named();
 <CodeSurfer theme={github}>
 
 
-```toml title-"Cargo" subtitle="Cargo.toml"
+```toml title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -1056,7 +1374,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 1,15
+```toml 1,15 title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -1079,7 +1397,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml
+```toml title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -1102,7 +1420,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 2
+```toml 2 title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -1125,7 +1443,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 3:14
+```toml 3:14 title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -1148,7 +1466,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 16:21
+```toml 16:21 title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -1171,7 +1489,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 16[6:15]
+```toml 16[6:15] title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -1194,7 +1512,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 16[6:30]
+```toml 16[6:30] title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -1217,7 +1535,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 17:18
+```toml 17:18 title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -1242,7 +1560,7 @@ glyph_brush = "0.5"
 gfx_window_glutin = "0.30"
 ```
 
-```toml 17:18
+```toml 17:18 title="Cargo" subtitle="Cargo.toml"
 [package]
 name = "ggez"
 description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
@@ -1270,10 +1588,395 @@ gfx_window_glutin = "0.30"
 </CodeSurfer>
 
 ---
-12. Cargo
+
+# Built-in testing & benchmarks
+
+- Rust has built-in tests and benchmarks
+- You can designate functions as a test or benchmark function by supplying a configuration flag
+- You can think these designators as as a target
+
 ---
-13. integrated test & benchmark
+
+<CodeSurfer theme={github}>
+
+
+```rust title="Built in testing" subtitle="My math module"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+```
+
+```rust title="Built in testing" subtitle="My math module"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+}
+
+```
+
+```rust 13 title="Built in testing" subtitle="Compile time target"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+}
+
+```
+
+```rust title="Built in testing" subtitle="Compile time target"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+  fn test_add( ){
+    assert_eq!(super::my_math_module::add(1, 2), 3);
+  }
+
+}
+
+```
+
+```rust 16 title="Built in testing" subtitle="Compile time target"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+  #[test]
+  fn test_add( ){
+    assert_eq!(super::my_math_module::add(1, 2), 3);
+  }
+
+}
+
+```
+
+```rust 16:19 title="Built in testing" subtitle="Compile time target"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+  fn test_internal ()
+  {
+    // some fn for tests only
+  }
+
+  #[test]
+  fn test_add( ){
+    assert_eq!(super::my_math_module::add(1, 2), 3);
+  }
+
+}
+
+```
+
+```rust 26:30 title="Built in testing" subtitle="Testing panics"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+  fn test_internal ()
+  {
+    // some fn for tests only
+  }
+
+  #[test]
+  fn test_add( ){
+    assert_eq!(super::my_math_module::add(1, 2), 3);
+  }
+
+  #[test]
+  #[should_panic]
+  fn test_any_panic() {
+     divide_non_zero_result(1, 0);
+  }
+
+}
+
+```
+
+```rust 27 title="Built in testing" subtitle="Testing panics"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+
+  fn test_internal ()
+  {
+    // some fn for tests only
+  }
+
+  #[test]
+  fn test_add( ){
+    assert_eq!(super::my_math_module::add(1, 2), 3);
+  }
+
+  #[test]
+  #[should_panic(expected = "Divide result is zero")]
+  fn test_any_panic() {
+     divide_non_zero_result(1, 0);
+  }
+
+}
+
+```
+
+```bash title="Built in testing" subtitle="Testing panics"
+
+# How to run tests
+
+$ cargo test
+
+```
+
+```bash title="Built in testing" subtitle="Testing panics"
+
+# How to run tests
+
+$ cargo test
+
+Finished test [unoptimized + debuginfo] target(s) in 0.01s
+ Running target/debug/deps/rusty_test_bench-e583d32cbe003e0c
+
+running 2 tests
+test tests::test_sub ... ok
+test tests::test_add ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+```
+
+```rust title="Built in benchmarking" subtitle="Testing panics"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  #[bench]
+  pub fn benchmark_plus (b: &mut Bencher)
+  {
+    b.iter(|| {
+      let y = super::my_math_module::add(1, 2);
+    });
+  }
+}
+
+```
+
+```rust 15 title="Built in benchmarking" subtitle="Testing panics"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  #[bench]
+  pub fn benchmark_plus (b: &mut Bencher)
+  {
+    b.iter(|| {
+      let y = super::my_math_module::add(1, 2);
+    });
+  }
+}
+
+```
+
+```rust 16[26:41] title="Built in benchmarking" subtitle="Testing panics"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  #[bench]
+  pub fn benchmark_plus (b: &mut Bencher)
+  {
+    b.iter(|| {
+      let y = super::my_math_module::add(1, 2);
+    });
+  }
+}
+
+```
+
+```rust 18:20 title="Built in benchmarking" subtitle="Testing panics"
+
+mod my_math_module {
+
+  pub fn add (x:i32, y:i32) -> i32 {
+    x + y
+  }
+
+  pub fn sub (x:i32, y:i32) -> i32 {
+    x - y
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  #[bench]
+  pub fn benchmark_plus (b: &mut Bencher)
+  {
+    b.iter(|| {
+      let y = super::my_math_module::add(1, 2);
+    });
+  }
+}
+
+```
+
+```bash title="Built in benchmarking" subtitle="Testing panics"
+
+# How to run benchmarks
+
+$ cargo bench
+
+```
+
+```bash title="Built in benchmarking" subtitle="Testing panics"
+
+# How to run tests
+
+$ rustc --test -O bench.rs
+
+```
+
+```bash title="Built in benchmarking" subtitle="Testing panics"
+
+# How to run tests
+
+$ rustc --test -O bench.rs
+$ ./bench --bench
+
+
+```
+
+```bash title="Built in benchmarking" subtitle="Testing panics"
+
+# How to run tests
+
+$ rustc --test -O bench.rs
+$ ./bench --bench
+running 1 test
+test benchmark_plus ... bench:       191 ns/iter (+/- 16)
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 1 measured
+
+```
+
+</CodeSurfer>
+
+
 ---
-14. releases
----
+
 ## The End
