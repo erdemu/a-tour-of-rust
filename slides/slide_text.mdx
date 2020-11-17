@@ -23,7 +23,9 @@ import poster from "./resources/images/poster.png";
 />
 
 ---
+
 <CodeSurfer theme={github}>
+
 
 ```cpp title="Memory safety example"
 #include<iostream>
@@ -71,7 +73,9 @@ int main(int argc, char *argv[])
 
 </CodeSurfer>
 
+
 ---
+
 # https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html
 
 import cwe from "./resources/images/weaknesses.png";
@@ -109,6 +113,7 @@ import originofrust from "./resources/images/originofrust.png";
 # Linear typesystem
 
 > "Linear type systems ensure that every variable is used exactly once by allowing exchange but not weakening or contraction."
+>
 > <cite>Benjamin Pierce</cite>
 
 ---
@@ -164,7 +169,7 @@ import ownership3 from "./resources/images/ownership3.png";
 
 ---
 
-# Borrowing 
+# Borrowing
 
 import borrowing from "./resources/images/borrowing.png";
 
@@ -334,6 +339,7 @@ impl Ip{
 
 </CodeSurfer>
 
+
 ---
 
 <CodeSurfer theme={github}>
@@ -423,6 +429,8 @@ match localhost {
 ```
 
 </CodeSurfer>
+
+
 ---
 
 # Error handling
@@ -443,6 +451,7 @@ import dontpanic from "./resources/images/dontpanic.jpeg";
 ---
 
 <CodeSurfer theme={github}>
+
 
 ```rust title="Panic example"
 fn do_something() {
@@ -489,6 +498,7 @@ fn main() {
 thread 'main' panicked at 'Problem opening the file: Os { code: 2, kind: NotFound, message: "No such file or directory" }', src/main.rs:8:23
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 ```
+
 ```rust title="Error handling example"
 let x = get_weather("Veldhoven").or(Ok(default));
 ```
@@ -502,11 +512,15 @@ enum Option<T> {
 
 </CodeSurfer>
 
+
 ---
+
 # Polymorphism
+
 ---
 
 <CodeSurfer theme={github}>
+
 
 ```rust title="Traits"
 trait Sound {
@@ -536,9 +550,14 @@ impl Sound for Cat {
 }
 
 ```
+
 </CodeSurfer>
 
+
+---
+
 <CodeSurfer theme={github}>
+
 
 ```rust title="Trait objects"
 trait Draw {
@@ -600,12 +619,15 @@ fn min<T: Ord>(value1: T, value2: T) -> T {
 
 </CodeSurfer>
 
+
 ---
+
 # Concurrency
 
-
 ---
+
 <CodeSurfer theme={github}>
+
 
 ```rust title="Fork/join"
 fn proces_files(files: Vec<String>) -> io::Result<()> {
@@ -787,6 +809,7 @@ let mut config = config_for_child.lock().unwrap();
 
 </CodeSurfer>
 
+
 ---
 
 # Unsafe
@@ -794,6 +817,7 @@ let mut config = config_for_child.lock().unwrap();
 ---
 
 <CodeSurfer theme={github}>
+
 
 ```rust 7,8,9,10,11 title="Fork/join"
 pub fn push(&mut self, value: T) {
@@ -810,7 +834,9 @@ pub fn push(&mut self, value: T) {
 }
 
 ```
+
 </CodeSurfer>
+
 
 ---
 

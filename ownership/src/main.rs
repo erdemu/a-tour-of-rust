@@ -1,9 +1,9 @@
-fn uppercase(input: &String) {
-    input.to_uppercase();
+fn uppercase(mut input: String) {
+    input = input.to_uppercase();
 }
 
 fn main() {
-    let output = String::from("hello world.");
-    uppercase(&output);
+    let mut output = String::from("hello world.");
+    uppercase(output);
     print!("{}", output);
 }
