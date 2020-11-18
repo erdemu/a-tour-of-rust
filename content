@@ -31,9 +31,9 @@ Our aim for tonight is to give you a short tour of the Rust programming language
 Will this work? The answer is: maybe. In some cases the vector will allocate new memory to enlarge and move its elements to this newly allocated block. The problem is that the reference 'ref' is then pointing into unused memory. This opens the door for segmentation faults or information leaking.
 
 ### NEXT SHEET ###
-The CWE website tracks common weaknesses in software development (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). 
+The CWE website tracks common weaknesses in software development.
 
-The top 25 shows numerous issues that may arise in software where memory management is not done properly. An internal investigation at Microsoft also showed that about 70% of the security bugs found in their products are related to memory management (https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html). The Chromium project reports the same figures for their Chrome derived browser ( https://www.chromium.org/Home/chromium-security/memory-safety).
+The top 25 shows numerous issues that may arise in software where memory management is not done properly. An internal investigation at Microsoft also showed that about 70% of the security bugs found in their products are related to memory management. The Chromium project reports the same figures for their Chrome derived browser.
 
 This seems to suggest that even with good engineers working on the code, it is still difficult to prevent these types of errors from occuring. A common denominator for these issues is the use of languages like C or C++. These languages offer runtime efficiency and low level control, but have the trade off of requiring rigorous testing and code checking to make sure no unintended issues are introduced. In contrast, languages with a garbage collector offer better protection from some of these types of issues but have the trade off of lacking the low level control needed in certain application domains, i.e. realtime systems. Enter Rust...
 
@@ -49,11 +49,7 @@ Rust gained popularity outside of Mozilla and has earned the honour of being the
 3. Linear typesystem, ownership, borrowing and lifetimes. (take image from thesis)
 ------------------
 
-The main property that differentiates Rust from languages like C and C++ is its typesystem. This system is known as a linear typesystem. The book 'Advanced topics in Types and Programming Languages' by Benjamin Pierce defines a linear typesystem as follows:
-
-"Linear type systems ensure that every variable is used exactly once by allowing exchange but not weakening or contraction."
-
-The key words here are 'used exactly once'. In this context this means that data in a certain memory region representing an object can be associated with one name only. To clarify this further I will explain this in terms of a c++ string object. 
+The main property that differentiates Rust from languages like C and C++ is its typesystem, which is known as a linear typesystem. Linear typesystems allow you to bind a value to a variable exactly once. To clarify this further I will explain this in terms of a c++ string object. 
 
 ### NEXT SHEET ###
 
@@ -76,6 +72,8 @@ In Rust it is possible to associate a second variable name to the string by mean
 To summarize: at any given time there may be many immutable references to a value or a single mutable reference. A reference must always be valid.
 
 A nice consequence of using linear types is that there is no need for a garbage collector. The compiler can deduce which variable a value belongs to and what the scope of that variable is. In Rust this scope is called the Lifetime of a variable. The absence of a garbage collector lets Rust enter the domain of languages like c and c++ and this is why it is often touted as a system programming language. In the event that you really do need a copy of a value, you can create one by calling the 'clone()' method on a type. This creates a deep copy of the value.
+
+The design principles behind Rust are there to eliminate undefined behavior and to have as much memory safety as possible.
 
 ### NEXT SHEET ###
 4. Enums

@@ -72,10 +72,8 @@ int main(int argc, char *argv[])
 
 </CodeSurfer>
 
-
 ---
-
-# https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html
+<SplitRight>
 
 import cwe from "./resources/images/weaknesses.png";
 
@@ -90,6 +88,17 @@ import cwe from "./resources/images/weaknesses.png";
   }}
 />
 
+# Why memory safety?
+<ul>
+  <li>Mitre: <strong>Top 25 issues</strong><br/> https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html</li>
+  <Steps>
+    <li>Microsoft: <strong>70% preventable</strong><br/> https://msrc-blog.microsoft.com/2019/11/07/using-rust-in-windows/</li>
+    <li>Chromium : <strong>70% preventable</strong><br/> https://www.chromium.  org/Home/chromium-security/memory-safety</li>
+  </Steps>
+</ul>
+
+</SplitRight>
+
 ---
 
 # Origin of rust
@@ -99,21 +108,22 @@ import originofrust from "./resources/images/originofrust.png";
 <img
   src={originofrust}
   style={{
-    width: "80%",
-    height: "80%",
+    width: "60%",
+    height: "60%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   }}
 />
 
----
-
-# Linear typesystem
-
-> "Linear type systems ensure that every variable is used exactly once by allowing exchange but not weakening or contraction."
->
-> <cite>Benjamin Pierce</cite>
+<ul>
+	<Steps>
+		<li> 2006 Graydon Hoare starts Rust </li>
+		<li> 2010 Mozilla announces Rust </li>
+		<li> 2015 Rust 1.0 </li>
+		<li> 2020 148 companies use Rust in production</li>
+	</Steps>
+</ul>
 
 ---
 
@@ -124,13 +134,15 @@ import ownership1 from "./resources/images/ownership1.png";
 <img
   src={ownership1}
   style={{
-    width: "80%",
-    height: "80%",
+    width: "60%",
+    height: "60%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   }}
 />
+
+A string type S1 in C++
 
 ---
 
@@ -141,13 +153,15 @@ import ownership2 from "./resources/images/ownership2.png";
 <img
   src={ownership2}
   style={{
-    width: "80%",
-    height: "80%",
+    width: "60%",
+    height: "60%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   }}
 />
+
+String S1 shallow copy
 
 ---
 
@@ -158,13 +172,15 @@ import ownership3 from "./resources/images/ownership3.png";
 <img
   src={ownership3}
   style={{
-    width: "80%",
-    height: "80%",
+    width: "60%",
+    height: "60%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   }}
 />
+
+String S2 owns the value, S1 is invalid
 
 ---
 
@@ -175,13 +191,15 @@ import borrowing from "./resources/images/borrowing.png";
 <img
   src={borrowing}
   style={{
-    width: "80%",
-    height: "80%",
+    width: "60%",
+    height: "60%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   }}
 />
+
+Reference S2 "borrows" from S1
 
 ---
 
