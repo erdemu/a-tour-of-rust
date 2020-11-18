@@ -1,4 +1,4 @@
-name: client
+name: server
 version: "1.0"
 author: Erdem A. <erdemu.alici@gmail.com>
 about: Gets a json formatted command and executes it
