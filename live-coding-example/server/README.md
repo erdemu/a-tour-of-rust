@@ -8,7 +8,6 @@ This binary gets a command encoded json from udp and executes something
 
 $ ./server -h
 
-target/debug/server --help
 server 1.0
 Erdem A. <erdemu.alici@gmail.com>
 Gets a json formatted command and executes it
