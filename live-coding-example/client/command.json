@@ -1,0 +1,6 @@
+{
+    "command_name" : "wait_for_n_seconds",
+    "params" : {
+        "amount_of_time_to_wait": 5
+    }
+}
