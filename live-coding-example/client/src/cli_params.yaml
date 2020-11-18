@@ -1,0 +1,26 @@
+name: client
+version: "1.0"
+author: Erdem A. <erdemu.alici@gmail.com>
+about: Sends contents of a file over udp to a server
+args:
+    - ip:
+        short: i
+        long: ip
+        value_name: ip_addr
+        about: Target ip (127.0.0.1 if not given)
+        takes_value: true
+        required: false
+    - port:
+        short: p
+        long: port
+        value_name: port
+        about: Sets the destination port
+        takes_value: true
+        required: true
+    - file:
+        short: f
+        long: file
+        value_name: file_path
+        about: A file you wish to send
+        takes_value: true
+        required: true

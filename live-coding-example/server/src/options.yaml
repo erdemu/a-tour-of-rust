@@ -1,0 +1,18 @@
+name: server
+version: "1.0"
+author: Erdem A. <erdemu.alici@gmail.com>
+about: Gets a json formatted command and executes it
+args:
+    - port:
+        short: p
+        long: port
+        value_name: port
+        about: Sets the rx port
+        takes_value: true
+        required: true
+    - n_worker:
+        short: n
+        long: n_worker
+        value_name: NumberOfWorkers
+        about: How many worker threads (default 8)
+        takes_value: true
