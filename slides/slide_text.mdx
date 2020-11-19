@@ -26,6 +26,7 @@ import poster from "./resources/images/poster.png";
 
 <CodeSurfer theme={github}>
 
+
 ```cpp title="C++ Memory safety example"
 #include<iostream>
 #include<vector>
@@ -72,8 +73,11 @@ int main(int argc, char *argv[])
 
 </CodeSurfer>
 
+
 ---
+
 <SplitRight>
+
 
 import cwe from "./resources/images/weaknesses.png";
 
@@ -89,15 +93,26 @@ import cwe from "./resources/images/weaknesses.png";
 />
 
 # Why memory safety?
+
 <ul>
-  <li>Mitre: <strong>Top 25 issues</strong><br/> https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html</li>
+  <li>
+    Mitre: <strong>Top 25 issues</strong>
+    <br /> https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html
+  </li>
   <Steps>
-    <li>Microsoft: <strong>70% preventable</strong><br/> https://msrc-blog.microsoft.com/2019/11/07/using-rust-in-windows/</li>
-    <li>Chromium : <strong>70% preventable</strong><br/> https://www.chromium.  org/Home/chromium-security/memory-safety</li>
+    <li>
+      Microsoft: <strong>70% preventable</strong>
+      <br /> https://msrc-blog.microsoft.com/2019/11/07/using-rust-in-windows/
+    </li>
+    <li>
+      Chromium : <strong>70% preventable</strong>
+      <br /> https://www.chromium. org/Home/chromium-security/memory-safety
+    </li>
   </Steps>
 </ul>
 
 </SplitRight>
+
 
 ---
 
@@ -117,12 +132,12 @@ import originofrust from "./resources/images/originofrust.png";
 />
 
 <ul>
-	<li> 2006 Graydon Hoare starts Rust </li>
-	<Steps>
-		<li> 2010 Mozilla announces Rust </li>
-		<li> 2015 Rust 1.0 </li>
-		<li> 2020 148 companies use Rust in production</li>
-	</Steps>
+  <li> 2006 Graydon Hoare starts Rust </li>
+  <Steps>
+    <li> 2010 Mozilla announces Rust </li>
+    <li> 2015 Rust 1.0 </li>
+    <li> 2020 148 companies use Rust in production</li>
+  </Steps>
 </ul>
 
 ---
@@ -202,10 +217,10 @@ import borrowing from "./resources/images/borrowing.png";
 Reference S2 borrows from S1
 
 <ul>
-	<Steps>
-		<li> Multiple immutable references allowed</li>
-		<li> Single mutable reference allowed</li>
-	</Steps>
+  <Steps>
+    <li> Multiple immutable references allowed</li>
+    <li> Single mutable reference allowed</li>
+  </Steps>
 </ul>
 
 ---
@@ -283,6 +298,7 @@ let localhost = Ip {
 ```
 
 </CodeSurfer>
+
 
 ---
 
@@ -447,6 +463,7 @@ match localhost {
 
 </CodeSurfer>
 
+
 ---
 
 # Error handling
@@ -468,6 +485,7 @@ import dontpanic from "./resources/images/dontpanic.jpeg";
 
 <CodeSurfer theme={github}>
 
+
 ```rust title="Result and Option type"
 enum Result<T,E> {
 	Ok(T),
@@ -479,11 +497,14 @@ enum Option<T> {
 	None
 }
 ```
+
 </CodeSurfer>
+
 
 ---
 
 <CodeSurfer theme={github}>
+
 
 ```rust title="Traits"
 trait Sound {
@@ -498,11 +519,14 @@ impl Sound for Dog {
 	}
 }
 ```
+
 </CodeSurfer>
+
 
 ---
 
 <CodeSurfer theme={github}>
+
 
 ```rust title="Generic functions" subtitle="Bound to Ord"
 fn min<T: Ord>(value1: T, value2: T) -> T {
@@ -516,17 +540,18 @@ fn min<T: Ord>(value1: T, value2: T) -> T {
 
 </CodeSurfer>
 
+
 ---
 
 # Concurrency
 
 <ul>
-<Steps>
-<li> fork/join </li>
-<li> channels </li>
-<li> arcs/mutex </li>
-<li> condition variables </li>
-</Steps>
+  <Steps>
+    <li> fork/join </li>
+    <li> channels </li>
+    <li> arcs/mutex </li>
+    <li> condition variables </li>
+  </Steps>
 </ul>
 
 ---
@@ -565,11 +590,13 @@ import arc from "./resources/images/atom.jpeg";
 
 <CodeSurfer theme={github}>
 
+
 ```rust subtitle="Atomic Reference Count"
 Arc<T>
 ```
 
 </CodeSurfer>
+
 
 ---
 
@@ -590,11 +617,13 @@ import lock from "./resources/images/lock.jpeg";
 
 <CodeSurfer theme={github}>
 
+
 ```rust subtitle="Mutex"
 Mutex<T>
 ```
 
 </CodeSurfer>
+
 
 ---
 
@@ -1721,8 +1750,7 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 1 measured
 
 </CodeSurfer>
 
+
 ---
 
 # The End
-
----
