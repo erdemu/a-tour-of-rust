@@ -26,6 +26,7 @@ import poster from "./resources/images/poster.png";
 
 <CodeSurfer theme={github}>
 
+
 ```cpp title="C++ Memory safety example"
 #include<iostream>
 #include<vector>
@@ -72,8 +73,11 @@ int main(int argc, char *argv[])
 
 </CodeSurfer>
 
+
 ---
+
 <SplitRight>
+
 
 import cwe from "./resources/images/weaknesses.png";
 
@@ -89,15 +93,26 @@ import cwe from "./resources/images/weaknesses.png";
 />
 
 # Why memory safety?
+
 <ul>
-  <li>Mitre: <strong>Top 25 issues</strong><br/> https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html</li>
+  <li>
+    Mitre: <strong>Top 25 issues</strong>
+    <br /> https://cwe.mitre.org/top25/archive/2020/2020_cwe_top25.html
+  </li>
   <Steps>
-    <li>Microsoft: <strong>70% preventable</strong><br/> https://msrc-blog.microsoft.com/2019/11/07/using-rust-in-windows/</li>
-    <li>Chromium : <strong>70% preventable</strong><br/> https://www.chromium.  org/Home/chromium-security/memory-safety</li>
+    <li>
+      Microsoft: <strong>70% preventable</strong>
+      <br /> https://msrc-blog.microsoft.com/2019/11/07/using-rust-in-windows/
+    </li>
+    <li>
+      Chromium : <strong>70% preventable</strong>
+      <br /> https://www.chromium. org/Home/chromium-security/memory-safety
+    </li>
   </Steps>
 </ul>
 
 </SplitRight>
+
 
 ---
 
@@ -117,12 +132,12 @@ import originofrust from "./resources/images/originofrust.png";
 />
 
 <ul>
-	<li> 2006 Graydon Hoare starts Rust </li>
-	<Steps>
-		<li> 2010 Mozilla announces Rust </li>
-		<li> 2015 Rust 1.0 </li>
-		<li> 2020 148 companies use Rust in production</li>
-	</Steps>
+  <li> 2006 Graydon Hoare starts Rust </li>
+  <Steps>
+    <li> 2010 Mozilla announces Rust </li>
+    <li> 2015 Rust 1.0 </li>
+    <li> 2020 148 companies use Rust in production</li>
+  </Steps>
 </ul>
 
 ---
@@ -202,10 +217,10 @@ import borrowing from "./resources/images/borrowing.png";
 Reference S2 borrows from S1
 
 <ul>
-	<Steps>
-		<li> Multiple immutable references allowed</li>
-		<li> Single mutable reference allowed</li>
-	</Steps>
+  <Steps>
+    <li> Multiple immutable references allowed</li>
+    <li> Single mutable reference allowed</li>
+  </Steps>
 </ul>
 
 ---
@@ -283,6 +298,7 @@ let localhost = Ip {
 ```
 
 </CodeSurfer>
+
 
 ---
 
@@ -447,6 +463,7 @@ match localhost {
 
 </CodeSurfer>
 
+
 ---
 
 # Error handling
@@ -468,6 +485,7 @@ import dontpanic from "./resources/images/dontpanic.jpeg";
 
 <CodeSurfer theme={github}>
 
+
 ```rust title="Result and Option type"
 enum Result<T,E> {
 	Ok(T),
@@ -479,11 +497,14 @@ enum Option<T> {
 	None
 }
 ```
+
 </CodeSurfer>
+
 
 ---
 
 <CodeSurfer theme={github}>
+
 
 ```rust title="Traits"
 trait Sound {
@@ -498,11 +519,14 @@ impl Sound for Dog {
 	}
 }
 ```
+
 </CodeSurfer>
+
 
 ---
 
 <CodeSurfer theme={github}>
+
 
 ```rust title="Generic functions" subtitle="Bound to Ord"
 fn min<T: Ord>(value1: T, value2: T) -> T {
@@ -516,17 +540,18 @@ fn min<T: Ord>(value1: T, value2: T) -> T {
 
 </CodeSurfer>
 
+
 ---
 
 # Concurrency
 
 <ul>
-<Steps>
-<li> fork/join </li>
-<li> channels </li>
-<li> arcs/mutex </li>
-<li> condition variables </li>
-</Steps>
+  <Steps>
+    <li> fork/join </li>
+    <li> channels </li>
+    <li> arcs/mutex </li>
+    <li> condition variables </li>
+  </Steps>
 </ul>
 
 ---
@@ -565,11 +590,13 @@ import arc from "./resources/images/atom.jpeg";
 
 <CodeSurfer theme={github}>
 
+
 ```rust subtitle="Atomic Reference Count"
 Arc<T>
 ```
 
 </CodeSurfer>
+
 
 ---
 
@@ -590,1136 +617,89 @@ import lock from "./resources/images/lock.jpeg";
 
 <CodeSurfer theme={github}>
 
+
 ```rust subtitle="Mutex"
 Mutex<T>
 ```
 
 </CodeSurfer>
 
----
-
-# Macros!
 
 ---
 
-# Macros!
+# Upcoming
 
-- Rust have many different constructs to let you reuse code
-- You have generics, incredible typesystem and traits
-- But sometimes you have just one great idea that it is not possible to implement with those constraints
-- Enter macros
-- Macros are way more powerful than your C++ macro's
-- They can tap into ast parsing of the language
-- You should use them only if there is no other way
-
----
-
-<CodeSurfer theme={github}>
-
-
-```rust title="Macros!" subtitle="See them from the eyes of the user"
-
-let x: Vec<u32> = vec![1, 2, 3];
-
-```
-
-```rust 3:10 title="Macros!" subtitle="See them from the eyes of the user"
-
-let x: Vec<u32> = vec![1, 2, 3];
-
-let x: Vec<u32> = {
-  let mut temp_vec = Vec::new();
-  temp_vec.push(1);
-  temp_vec.push(2);
-  temp_vec.push(3);
-  temp_vec
-};
-
-```
-
-```rust 3:10 title="Macros!" subtitle="See them from the eyes of the user"
-
-let x: Vec<u32> = vec![1, 2, 3];
-
-let x: Vec<u32> = {
-  let mut temp_vec = Vec::new();
-  temp_vec.push(1);
-  temp_vec.push(2);
-  temp_vec.push(3);
-  temp_vec
-};
-
-```
-
-</CodeSurfer>
-
+<ul>
+  <Steps>
+    <li> Unsafe</li>
+    <li> Macros </li>
+    <li> Modules </li>
+    <li> Std::lib </li>
+    <li> Cargo </li>
+    <li> Integrated tests & benchmark </li>
+    <li> Releases & development </li>
+  </Steps>
+</ul>
 
 ---
 
-<CodeSurferColumns theme={github}>
+# But no !
 
-
-<Step title="Macros!" subtitle="Expand the expansion">
-
-
-```rust
-let x: Vec<u32> = {
-  let mut temp_vec = Vec::new();
-  temp_vec.push(1);
-  temp_vec.push(2);
-  temp_vec.push(3);
-  temp_vec
-};
-```
-
-```rust
-macro_rules! vec {
-( $( $x:expr ),* ) => {
-    {
-        let mut temp_vec = Vec::new();
-        $(
-            temp_vec.push($x);
-        )*
-        temp_vec
-    }
-};
-}
-
-```
-
-</Step>
-
-
-<Step title="Macros!" subtitle="Expand the expansion">
-
-
-```rust
-let x: Vec<u32> = {
-  let mut temp_vec = Vec::new();
-  temp_vec.push(1);
-  temp_vec.push(2);
-  temp_vec.push(3);
-  temp_vec
-};
-```
-
-```rust 1
-macro_rules! vec { // fn vec! ( input )
-( $( $x:expr ),* ) => {
-    {
-        let mut temp_vec = Vec::new();
-        $(
-            temp_vec.push($x);
-        )*
-        temp_vec
-    }
-};
-}
-```
-
-</Step>
-
-
-<Step title="Macros!" subtitle="Expand the expansion">
-
-
-```rust
-let x: Vec<u32> = {
-  let mut temp_vec = Vec::new();
-  temp_vec.push(1);
-  temp_vec.push(2);
-  temp_vec.push(3);
-  temp_vec
-};
-```
-
-```rust 2
-macro_rules! vec {
-( $( $x:expr ),* ) => { // catch ast inside the input
-    {
-        let mut temp_vec = Vec::new();
-        $(
-            temp_vec.push($x);
-        )*
-        temp_vec
-    }
-};
-}
-```
-
-</Step>
-
-
-<Step title="Macros!" subtitle="Expand the expansion">
-
-
-```rust
-let x: Vec<u32> = {
-  let mut temp_vec = Vec::new();
-  temp_vec.push(1);
-  temp_vec.push(2);
-  temp_vec.push(3);
-  temp_vec
-};
-```
-
-```rust 2,5:7
-macro_rules! vec {
-( $( $x:expr ),* ) => {
-    {
-        let mut temp_vec = Vec::new();
-        $(
-            temp_vec.push($x);
-        )*
-        temp_vec
-    }
-};
-}
-```
-
-</Step>
-
-
-<Step title="Macros!" subtitle="Expand the expansion">
-
-
-```rust
-let x: Vec<u32> = {
-  let mut temp_vec = Vec::new();
-  temp_vec.push(1);
-  temp_vec.push(2);
-  temp_vec.push(3);
-  temp_vec
-};
-```
-
-```rust 4,8
-macro_rules! vec {
-( $( $x:expr ),* ) => {
-    {
-        let mut temp_vec = Vec::new();
-        $(
-            temp_vec.push($x);
-        )*
-        temp_vec
-    }
-};
-}
-```
-
-</Step>
-
-
-</CodeSurferColumns>
-
+<Steps>
+  <li> We decided that even those things are interesting to us</li>
+  <li> This is only an introduction </li>
+  <li> And we want you to get the feeling for this language </li>
+  <li>
+    So we're going to (try) a live coding session for the rest of the talk
+  </li>
+  <li>
+    We are going to create a multithreaded application with rust in less than 70
+    lines of code
+  </li>
+  <li> From nothing !! </li>
+  <li> Even we've would like to say this was the plan all along... </li>
+  <li>
+    It wasn't so all the topics that I showed already exists and we will share
+    them with you later
+  </li>
+</Steps>
 
 ---
 
-# Macros!
+# What are we building
 
-- Use them sparingly
-- Standard library has less than 50 !!
-- That includes super basic stuff like print, format, try, stringfy
+import demo from "./resources/images/livedemo.png";
 
----
-
-# Modules
-
-- You're mostly java people, so I don't have to sell modules to you right ?
-- We _try_ to divide a giant system into bite sized _modules_
-- Modules are representative of a unitary function/feature/data structure of the system
-- Rust has a very powerful module system
-- Module system manages code & structure visibility
-- A module can include functions, traits, implementations nested modules
+<img
+  src={demo}
+  style={{
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }}
+/>
 
 ---
 
-<CodeSurfer theme={github}>
-
-
-```rust title="Modules" subtitle="Simple Module"
-
-mod greeting_services {
-    fn greetings() {
-        println!("Hello !");
-    }
-}
-
-```
-
-```rust title="Modules" subtitle="Visibility?"
-
-mod greeting_services {
-    fn greetings() {
-        println!("Hello !");
-    }
-}
-
-```
-
-```rust title="Modules" subtitle="Visibility?"
-
-mod greeting_services {
-    // Private to the greeting_services
-    fn greetings() {
-        println!("Hello !");
-    }
-}
-
-```
-
-```rust title="Modules" subtitle="Visibility?"
-
-mod greeting_services {
-    // Public
-    pub fn greetings() {
-        println!("Hello !");
-    }
-}
-
-```
-
-```rust title="Modules" subtitle="Visibility?"
-
-mod greeting_services {
-
-    pub(in crate::greeting_services) fn path_constrained_visibility() {
-        println!("Hello !");
-    }
-
-    pub(self) fn private() {
-        println!("Hello !");
-    }
-
-    pub(super) fn public_in_super() {
-        println!("Hello !");
-    }
-}
-
-```
-
-```rust title="Modules" subtitle="How about structs?"
-
-mod my_cool_module {
-
-  pub struct OpenBox<T> {
-      pub contents: T,
-  }
-
-  pub struct ClosedBox<T> {
-      contents: T,
-  }
-}
-
-```
-
-```rust 13 title="Modules" subtitle="How about structs?"
-
-mod my_cool_module {
-
-  pub struct OpenBox<T> {
-      pub contents: T,
-  }
-
-  pub struct ClosedBox<T> {
-      contents: T,
-  }
-}
-
-let obj = my_cool_module::OpenBox { contents: String::from("Hello, World! "), };
-
-
-```
-
-```rust 13 title="Modules" subtitle="How about structs?"
-
-mod my_cool_module {
-
-  pub struct OpenBox<T> {
-      pub contents: T,
-  }
-
-  pub struct ClosedBox<T> {
-      contents: T,
-  }
-}
-
-let obj = my_cool_module::ClosedBox { contents: String::from("Hello, World! "), };
-
-
-```
-
-```rust title="Modules" subtitle="How about structs?"
-
-mod my_cool_module {
-
-  pub struct OpenBox<T> {
-      pub contents: T,
-  }
-
-  pub struct ClosedBox<T> {
-      contents: T,
-  }
-
-  impl<T> ClosedBox<T> {
-      pub fn new(contents: T) -> ClosedBox<T> {
-        ClosedBox {
-          contents: contents,
-      }
-    }
-  }
-}
-
-```
-
-```rust title="Modules" subtitle="How about structs?"
-
-mod my_cool_module {
-
-  pub struct OpenBox<T> {
-      pub contents: T,
-  }
-
-  pub struct ClosedBox<T> {
-      contents: T,
-  }
-
-  impl<T> ClosedBox<T> {
-      pub fn new(contents: T) -> ClosedBox<T> {
-        ClosedBox {
-          contents: contents,
-      }
-    }
-  }
-}
-
-let obj = my_cool_module::ClosedBox::new("Hello, World!");
-
-```
-
-```rust title="Modules" subtitle="use keyword"
-
-use crate::some::deep::stuff::{
-  a_lovely_function,
-  a_douche_function,
-  a_trait_that_douche_accepts
-};
-
-
-```
-
-```rust title="Modules" subtitle="use keyword"
-
-use crate::some::deep::stuff::{
-  a_lovely_function,
-  a_douche_function,
-  a_trait_that_douche_accepts
-};
-
-a_lovely_function();
-
-```
-
-```rust title="Modules" subtitle="use keyword"
-
-use crate::some::deep::stuff::a_douche_function as function_shall_not_be_named;
-
-function_shall_not_be_named();
-
-```
-
-</CodeSurfer>
-
-
+# What are we building
+
+import demo_marked from "./resources/images/livedemomarked.png";
+
+<img
+  src={demo_marked}
+  style={{
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }}
+/>
 ---
 
-# Std::lib
-
-- Intentionally lean
-- Don't mistake it leanless as being useless
-- Consider it as an intelligent selection of common features
-- It has containers, i/o, multithreading support
-
----
-
-# A std::lib tour
-
-- First Stop: Containers
-- It has a continous heap storage Vec which you can say it is the counterpart of vector in C++
-- Double ended queue VecDeque
-- Linked list
-- Key Value Pairs: HashMap, BTreeMap
-- Sets: HashSet, BTreeSet
-- Priority queue: BinaryHeap
-- Experimental(Lazy)
-
----
-
-# A std::lib tour
-
-- Second stop: I/O
-- Standard input/output
-- os (Os specific functions)
-- fmt (high quality string formatting)
-- File IO
-- full TCP stack
-- full UDP stack
-
----
-
-# A std::lib tour
-
-- Last stop: Threading
-- Threading primitives (threads, handles)
-- Sync primitives
-- atomic types
-- Multiple producer single consumer queues
-- Messaging
-- Task Wakers
-
----
-
-# Cargo
-
-- It is the official Rust package managment tool
-- This is a gross understandment
-- Cargo knows how to compile your code
-- Cargo knows how to talk with crates.io to get you a nice crate
-- Cargo knows to handle multiple versions or targets of rustc
-- Cargo knows how to run tests
-- Cargo knows how to run benchmarks
-- It defends it attacs it does everything !!!!
-
----
-
-<CodeSurfer theme={github}>
-
-
-```toml title="Cargo" subtitle="Cargo.toml"
-[package]
-name = "ggez"
-description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
-version = "0.5.1"
-homepage = "http://ggez.rs"
-repository = "https://github.com/ggez/ggez"
-documentation = "https://docs.rs/ggez"
-keywords = ["ggez", "graphics", "2D", "game", "engine"]
-authors = [
-   "Rafael Epplee <raffomania@gmail.com>",
-   "Sven-Hendrik Haase <svenstaro@gmail.com>",
-   "Simon Heath <icefoxen@gmail.com>",
-]
-
-[dependencies]
-gfx = "0.18"
-gfx_core = "0.9"
-gfx_device_gl = "0.16"
-glyph_brush = "0.5"
-gfx_window_glutin = "0.30"
-```
-
-```toml 1,15 title="Cargo" subtitle="Cargo.toml"
-[package]
-name = "ggez"
-description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
-version = "0.5.1"
-homepage = "http://ggez.rs"
-repository = "https://github.com/ggez/ggez"
-documentation = "https://docs.rs/ggez"
-keywords = ["ggez", "graphics", "2D", "game", "engine"]
-authors = [
-   "Rafael Epplee <raffomania@gmail.com>",
-   "Sven-Hendrik Haase <svenstaro@gmail.com>",
-   "Simon Heath <icefoxen@gmail.com>",
-]
-
-[dependencies]
-gfx = "0.18"
-gfx_core = "0.9"
-gfx_device_gl = "0.16"
-glyph_brush = "0.5"
-gfx_window_glutin = "0.30"
-```
-
-```toml title="Cargo" subtitle="Cargo.toml"
-[package]
-name = "ggez"
-description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
-version = "0.5.1"
-homepage = "http://ggez.rs"
-repository = "https://github.com/ggez/ggez"
-documentation = "https://docs.rs/ggez"
-keywords = ["ggez", "graphics", "2D", "game", "engine"]
-authors = [
-   "Rafael Epplee <raffomania@gmail.com>",
-   "Sven-Hendrik Haase <svenstaro@gmail.com>",
-   "Simon Heath <icefoxen@gmail.com>",
-]
-
-[dependencies]
-gfx = "0.18"
-gfx_core = "0.9"
-gfx_device_gl = "0.16"
-glyph_brush = "0.5"
-gfx_window_glutin = "0.30"
-```
-
-```toml 2 title="Cargo" subtitle="Cargo.toml"
-[package]
-name = "ggez"
-description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
-version = "0.5.1"
-homepage = "http://ggez.rs"
-repository = "https://github.com/ggez/ggez"
-documentation = "https://docs.rs/ggez"
-keywords = ["ggez", "graphics", "2D", "game", "engine"]
-authors = [
-   "Rafael Epplee <raffomania@gmail.com>",
-   "Sven-Hendrik Haase <svenstaro@gmail.com>",
-   "Simon Heath <icefoxen@gmail.com>",
-]
-
-[dependencies]
-gfx = "0.18"
-gfx_core = "0.9"
-gfx_device_gl = "0.16"
-glyph_brush = "0.5"
-gfx_window_glutin = "0.30"
-```
-
-```toml 3:14 title="Cargo" subtitle="Cargo.toml"
-[package]
-name = "ggez"
-description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
-version = "0.5.1"
-homepage = "http://ggez.rs"
-repository = "https://github.com/ggez/ggez"
-documentation = "https://docs.rs/ggez"
-keywords = ["ggez", "graphics", "2D", "game", "engine"]
-authors = [
-   "Rafael Epplee <raffomania@gmail.com>",
-   "Sven-Hendrik Haase <svenstaro@gmail.com>",
-   "Simon Heath <icefoxen@gmail.com>",
-]
-
-[dependencies]
-gfx = "0.18"
-gfx_core = "0.9"
-gfx_device_gl = "0.16"
-glyph_brush = "0.5"
-gfx_window_glutin = "0.30"
-```
-
-```toml 16:21 title="Cargo" subtitle="Cargo.toml"
-[package]
-name = "ggez"
-description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
-version = "0.5.1"
-homepage = "http://ggez.rs"
-repository = "https://github.com/ggez/ggez"
-documentation = "https://docs.rs/ggez"
-keywords = ["ggez", "graphics", "2D", "game", "engine"]
-authors = [
-   "Rafael Epplee <raffomania@gmail.com>",
-   "Sven-Hendrik Haase <svenstaro@gmail.com>",
-   "Simon Heath <icefoxen@gmail.com>",
-]
-
-[dependencies]
-gfx = "0.18"
-gfx_core = "0.9"
-gfx_device_gl = "0.16"
-glyph_brush = "0.5"
-gfx_window_glutin = "0.30"
-```
-
-```toml 16[6:15] title="Cargo" subtitle="Cargo.toml"
-[package]
-name = "ggez"
-description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
-version = "0.5.1"
-homepage = "http://ggez.rs"
-repository = "https://github.com/ggez/ggez"
-documentation = "https://docs.rs/ggez"
-keywords = ["ggez", "graphics", "2D", "game", "engine"]
-authors = [
-   "Rafael Epplee <raffomania@gmail.com>",
-   "Sven-Hendrik Haase <svenstaro@gmail.com>",
-   "Simon Heath <icefoxen@gmail.com>",
-]
-
-[dependencies]
-gfx = "0.18"
-gfx_core = "0.9"
-gfx_device_gl = "0.16"
-glyph_brush = "0.5"
-gfx_window_glutin = "0.30"
-```
-
-```toml 16[6:30] title="Cargo" subtitle="Cargo.toml"
-[package]
-name = "ggez"
-description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
-version = "0.5.1"
-homepage = "http://ggez.rs"
-repository = "https://github.com/ggez/ggez"
-documentation = "https://docs.rs/ggez"
-keywords = ["ggez", "graphics", "2D", "game", "engine"]
-authors = [
-   "Rafael Epplee <raffomania@gmail.com>",
-   "Sven-Hendrik Haase <svenstaro@gmail.com>",
-   "Simon Heath <icefoxen@gmail.com>",
-]
-
-[dependencies]
-gfx = "^0.18" // Until the 1.00
-gfx_core = "0.9"
-gfx_device_gl = "0.16"
-glyph_brush = "0.5"
-gfx_window_glutin = "0.30"
-```
-
-```toml 17:18 title="Cargo" subtitle="Cargo.toml"
-[package]
-name = "ggez"
-description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
-version = "0.5.1"
-homepage = "http://ggez.rs"
-repository = "https://github.com/ggez/ggez"
-documentation = "https://docs.rs/ggez"
-keywords = ["ggez", "graphics", "2D", "game", "engine"]
-authors = [
-   "Rafael Epplee <raffomania@gmail.com>",
-   "Sven-Hendrik Haase <svenstaro@gmail.com>",
-   "Simon Heath <icefoxen@gmail.com>",
-]
-
-[dependencies]
-gfx = "^0.18"
-some-crate = { version = "1.0", registry = "my-registry" }
-rand = { git = "https://github.com/rust-lang-nursery/rand" }
-gfx_core = "0.9"
-gfx_device_gl = "0.16"
-glyph_brush = "0.5"
-gfx_window_glutin = "0.30"
-```
-
-```toml 17:18 title="Cargo" subtitle="Cargo.toml"
-[package]
-name = "ggez"
-description = "A lightweight game framework for making 2D games with minimum friction, inspired by Love2D."
-version = "0.5.1"
-homepage = "http://ggez.rs"
-repository = "https://github.com/ggez/ggez"
-documentation = "https://docs.rs/ggez"
-keywords = ["ggez", "graphics", "2D", "game", "engine"]
-authors = [
-   "Rafael Epplee <raffomania@gmail.com>",
-   "Sven-Hendrik Haase <svenstaro@gmail.com>",
-   "Simon Heath <icefoxen@gmail.com>",
-]
-
-[dependencies]
-gfx = "^0.18"
-some-crate = { version = "1.0", registry = "my-registry" }
-rand = { git = "https://github.com/rust-lang-nursery/rand", branch="someExperimentalBranch" }
-gfx_core = "0.9"
-gfx_device_gl = "0.16"
-glyph_brush = "0.5"
-gfx_window_glutin = "0.30"
-```
-
-</CodeSurfer>
-
-
----
-
-# Built-in testing & benchmarks
-
-- Rust has built-in tests and benchmarks
-- You can designate functions as a test or benchmark function by supplying a configuration flag
-- You can think these designators as as a target
-
----
-
-<CodeSurfer theme={github}>
-
-
-```rust title="Built in testing" subtitle="My math module"
-
-mod my_math_module {
-
-  pub fn add (x:i32, y:i32) -> i32 {
-    x + y
-  }
-
-  pub fn sub (x:i32, y:i32) -> i32 {
-    x - y
-  }
-}
-
-```
-
-```rust title="Built in testing" subtitle="My math module"
-
-mod my_math_module {
-
-  pub fn add (x:i32, y:i32) -> i32 {
-    x + y
-  }
-
-  pub fn sub (x:i32, y:i32) -> i32 {
-    x - y
-  }
-}
-
-#[cfg(test)]
-mod tests {
-
-}
-
-```
-
-```rust 13 title="Built in testing" subtitle="Compile time target"
-
-mod my_math_module {
-
-  pub fn add (x:i32, y:i32) -> i32 {
-    x + y
-  }
-
-  pub fn sub (x:i32, y:i32) -> i32 {
-    x - y
-  }
-}
-
-#[cfg(test)]
-mod tests {
-
-}
-
-```
-
-```rust title="Built in testing" subtitle="Compile time target"
-
-mod my_math_module {
-
-  pub fn add (x:i32, y:i32) -> i32 {
-    x + y
-  }
-
-  pub fn sub (x:i32, y:i32) -> i32 {
-    x - y
-  }
-}
-
-#[cfg(test)]
-mod tests {
-
-  fn test_add( ){
-    assert_eq!(super::my_math_module::add(1, 2), 3);
-  }
-
-}
-
-```
-
-```rust 16 title="Built in testing" subtitle="Compile time target"
-
-mod my_math_module {
-
-  pub fn add (x:i32, y:i32) -> i32 {
-    x + y
-  }
-
-  pub fn sub (x:i32, y:i32) -> i32 {
-    x - y
-  }
-}
-
-#[cfg(test)]
-mod tests {
-
-  #[test]
-  fn test_add( ){
-    assert_eq!(super::my_math_module::add(1, 2), 3);
-  }
-
-}
-
-```
-
-```rust 16:19 title="Built in testing" subtitle="Compile time target"
-
-mod my_math_module {
-
-  pub fn add (x:i32, y:i32) -> i32 {
-    x + y
-  }
-
-  pub fn sub (x:i32, y:i32) -> i32 {
-    x - y
-  }
-}
-
-#[cfg(test)]
-mod tests {
-
-  fn test_internal ()
-  {
-    // some fn for tests only
-  }
-
-  #[test]
-  fn test_add( ){
-    assert_eq!(super::my_math_module::add(1, 2), 3);
-  }
-
-}
-
-```
-
-```rust 26:30 title="Built in testing" subtitle="Testing panics"
-
-mod my_math_module {
-
-  pub fn add (x:i32, y:i32) -> i32 {
-    x + y
-  }
-
-  pub fn sub (x:i32, y:i32) -> i32 {
-    x - y
-  }
-}
-
-#[cfg(test)]
-mod tests {
-
-  fn test_internal ()
-  {
-    // some fn for tests only
-  }
-
-  #[test]
-  fn test_add( ){
-    assert_eq!(super::my_math_module::add(1, 2), 3);
-  }
-
-  #[test]
-  #[should_panic]
-  fn test_any_panic() {
-     divide_non_zero_result(1, 0);
-  }
-
-}
-
-```
-
-```rust 27 title="Built in testing" subtitle="Testing panics"
-
-mod my_math_module {
-
-  pub fn add (x:i32, y:i32) -> i32 {
-    x + y
-  }
-
-  pub fn sub (x:i32, y:i32) -> i32 {
-    x - y
-  }
-}
-
-#[cfg(test)]
-mod tests {
-
-  fn test_internal ()
-  {
-    // some fn for tests only
-  }
-
-  #[test]
-  fn test_add( ){
-    assert_eq!(super::my_math_module::add(1, 2), 3);
-  }
-
-  #[test]
-  #[should_panic(expected = "Divide result is zero")]
-  fn test_any_panic() {
-     divide_non_zero_result(1, 0);
-  }
-
-}
-
-```
-
-```bash title="Built in testing" subtitle="Testing panics"
-
-# How to run tests
-
-$ cargo test
-
-```
-
-```bash title="Built in testing" subtitle="Testing panics"
-
-# How to run tests
-
-$ cargo test
-
-Finished test [unoptimized + debuginfo] target(s) in 0.01s
- Running target/debug/deps/rusty_test_bench-e583d32cbe003e0c
-
-running 2 tests
-test tests::test_sub ... ok
-test tests::test_add ... ok
-
-test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
-
-```
-
-```rust title="Built in benchmarking" subtitle="Testing panics"
-
-mod my_math_module {
-
-  pub fn add (x:i32, y:i32) -> i32 {
-    x + y
-  }
-
-  pub fn sub (x:i32, y:i32) -> i32 {
-    x - y
-  }
-}
-
-#[cfg(test)]
-mod tests {
-  #[bench]
-  pub fn benchmark_plus (b: &mut Bencher)
-  {
-    b.iter(|| {
-      let y = super::my_math_module::add(1, 2);
-    });
-  }
-}
-
-```
-
-```rust 15 title="Built in benchmarking" subtitle="Testing panics"
-
-mod my_math_module {
-
-  pub fn add (x:i32, y:i32) -> i32 {
-    x + y
-  }
-
-  pub fn sub (x:i32, y:i32) -> i32 {
-    x - y
-  }
-}
-
-#[cfg(test)]
-mod tests {
-  #[bench]
-  pub fn benchmark_plus (b: &mut Bencher)
-  {
-    b.iter(|| {
-      let y = super::my_math_module::add(1, 2);
-    });
-  }
-}
-
-```
-
-```rust 16[26:41] title="Built in benchmarking" subtitle="Testing panics"
-
-mod my_math_module {
-
-  pub fn add (x:i32, y:i32) -> i32 {
-    x + y
-  }
-
-  pub fn sub (x:i32, y:i32) -> i32 {
-    x - y
-  }
-}
-
-#[cfg(test)]
-mod tests {
-  #[bench]
-  pub fn benchmark_plus (b: &mut Bencher)
-  {
-    b.iter(|| {
-      let y = super::my_math_module::add(1, 2);
-    });
-  }
-}
-
-```
-
-```rust 18:20 title="Built in benchmarking" subtitle="Testing panics"
-
-mod my_math_module {
-
-  pub fn add (x:i32, y:i32) -> i32 {
-    x + y
-  }
-
-  pub fn sub (x:i32, y:i32) -> i32 {
-    x - y
-  }
-}
-
-#[cfg(test)]
-mod tests {
-  #[bench]
-  pub fn benchmark_plus (b: &mut Bencher)
-  {
-    b.iter(|| {
-      let y = super::my_math_module::add(1, 2);
-    });
-  }
-}
-
-```
-
-```bash title="Built in benchmarking" subtitle="Testing panics"
-
-# How to run benchmarks
-
-$ cargo bench
-
-```
-
-```bash title="Built in benchmarking" subtitle="Testing panics"
-
-# How to run tests
-
-$ rustc --test -O bench.rs
-
-```
-
-```bash title="Built in benchmarking" subtitle="Testing panics"
-
-# How to run tests
-
-$ rustc --test -O bench.rs
-$ ./bench --bench
-
-
-```
-
-```bash title="Built in benchmarking" subtitle="Testing panics"
-
-# How to run tests
-
-$ rustc --test -O bench.rs
-$ ./bench --bench
-running 1 test
-test benchmark_plus ... bench:       191 ns/iter (+/- 16)
-
-test result: ok. 0 passed; 0 failed; 0 ignored; 1 measured
-
-```
-
-</CodeSurfer>
+# Let's start
 
 ---
 
