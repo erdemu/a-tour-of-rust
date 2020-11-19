@@ -42,7 +42,8 @@ This seems to suggest that even with good engineers working on the code, it is s
 2. Origin of Rust
 ------------------
 
-In 2006 a Mozilla Research employee named Graydon Hoare started the Rust language project as a means to design a language that provides better memory safety guarantees while still offering the low level control that c and c++ offer. Mozilla started sponsoring the project in 2009 and announced it in 2010. The first major release of the language was in 2015. Initially the language was used for the Servo browser project. Servo was developed in cooperation with Samsung as a means to explore the concurrency and memory safety properties of Rust in order to create a parallelized web browser. The CSS style engine has already found its way into the Firefox browser.
+In 2006 a Mozilla Research employee named Graydon Hoare started the Rust language project as a means to design a language that provides better memory safety guarantees while still offering the low level control that c and c++ offer. 
+Mozilla started sponsoring the project in 2009 and announced it in 2010. The first major release of the language was in 2015. Initially the language was used for the Servo browser project. Servo was developed in cooperation with Samsung as a means to explore the concurrency and memory safety properties of Rust in order to create a parallelized web browser. The CSS style engine has already found its way into the Firefox browser.
 
 Rust gained popularity outside of Mozilla and has earned the honour of being the "most loved programming language" on the Stack Overflow developer survey since 2016. The industry also started adopting the language and according to the project page around 148 companies are using Rust in production code. Microsoft and Google have shown serious interest and researched the language for use in security critical components.
 
@@ -89,9 +90,11 @@ The design principles behind Rust are there to eliminate undefined behavior and 
 Rust divides error handling in two categories: non-recoverable and recoverable. A non-recoverable error is an condition in the program that should never happen and is cause for the program to end prematurely. An example of that would be a division by zero as that leads to an undefined result. In Rust such an error is called a 'panic'. In the event of a panic, the program halts and by default a panic handler is called. 
 Rust will start unwinding the stack and print out a stacktrace for further analysis. One thing to note is that a panic will stay within the boundaries of a thread. So if one thread panics, it does not mean that your whole program will crash. Instead, the thread will abort and the parent thread will be able to retrieve a thread result. In this case the result will be an error. This makes for more robust programs and allows the program to continue the other threads.
 
+Panicking is generally viewed as a last resort to prevent undifined behavior.
+
 ### NEXT SHEET ###
 
-Let's move on to recoverable errors. The Rust language does not have an exception mechanism. Instead it relies on return values. The Return enum type contains either an OK type, which contains the actual value, or an Error type which holds context information like an exception would. 
+Let's move on to recoverable errors. The Rust language does not have an exception mechanism. Instead it relies on return values. The Result enum type contains either an OK type, which contains the actual value, or an Error type which holds context information like an exception would. 
 Similarly, the option type contains either a Some with a value or a None type when it is OK to return nothing.
 
 The advantage of using these Enums is that the caller must do something with them. It is not possible to accidentally ignore the error and that again reduces undefined behavior.
@@ -101,7 +104,9 @@ The advantage of using these Enums is that the caller must do something with the
 ### NEXT SHEET ###
 Polymorphism in Rust is enabled by the use of Traits, which are similar to Interfaces in Java or Abstract classed in C++. Rust does not have classes or inheritance, but you can create structs and add methods to them by implementing a trait which declares the methods. An example of a trait and implementation is shown here. The trait or behavior Sound can then be implemented by the Dog.
 
-Rust traits can be implemented even on built in types like integer and often the compiler can optimize away the virtual method call. A novelty in the trait system is the trait object. This allows you to create a vector of mixed types for instance. Unfortunately we cannot dive further into this.
+Rust traits can be implemented on built in types as well, even on an integer. The compiler can often optimize away the virtual method call to make it more effictient.
+
+A novelty in the trait system is the trait object. This allows you to create a vector of mixed types for instance. Unfortunately we cannot dive further into this now, but it is an interestic topic to look up.
 
 ### NEXT SHEET ###
 
@@ -109,7 +114,7 @@ Generic methods
 
 One other way to achieve polymorphism is the use of generic methods. This is similar to Java Generics and C++ templates.
 The capital T denotes any type with which this function will be called. Like templates, Rust will generate the machine code compile time for each type. 
-A generic type can be bound or restricted to one or more traits. In this case it is bound to the Ord trait so the type can be compared.
+A generic type can be bound or restricted to one or more traits. In this case it is bound to the Ord trait so the function can only be used with types that can be compared.
 
 
 fn min<T: Ord>(value1: T, value2: T) -> T {
@@ -152,6 +157,6 @@ Unfortunately we cannot dive further in this topic here,but we have coding examp
 One last word on Arcs and Mutexes. In Rust you can share immutable data between threads by means of a so called Arc (atomic reference count). This is a thread safe reference counted type, which ensures the data contained in it will not be destroyed until the counter reaches 0. 
 
 Rust does support a mutex type if you really do need to share mutable data.
-The advantage of this type is that is wraps a mutex around a value, so you cannot get to the data unless you have the lock. A lock is scoped and automatically unlocked. If a thread aborts, the mutex is marked as poisoned, so that other thread cannot read possibly corrupt data. 
+The advantage of this type is that is wraps a mutex around a value, so you cannot get to the data unless you have the lock. A lock is scoped and automatically unlocked. If a thread aborts, the mutex is marked as poisoned, so that other thread cannot read the data which may be corrupted. 
 
 Unfortunately, Rust cannot protect you from deadlocks and livelocks, so consider carefully before using a mutex.

@@ -592,9 +592,7 @@ import arc from "./resources/images/atom.jpeg";
 
 
 ```rust subtitle="Atomic Reference Count"
-
 Arc<T>
-
 ```
 
 </CodeSurfer>
@@ -621,13 +619,231 @@ import lock from "./resources/images/lock.jpeg";
 
 
 ```rust subtitle="Mutex"
-
 Mutex<T>
+```
+
+</CodeSurfer>
+
+<<<<<<< HEAD
+
+---
+
+# Macros!
+
+---
+
+# Macros!
+
+- Rust have many different constructs to let you reuse code
+- You have generics, incredible typesystem and traits
+- But sometimes you have just one great idea that it is not possible to implement with those constraints
+- Enter macros
+- Macros are way more powerful than your C++ macro's
+- They can tap into ast parsing of the language
+- You should use them only if there is no other way
+
+---
+
+<CodeSurfer theme={github}>
+
+
+```rust title="Macros!" subtitle="See them from the eyes of the user"
+
+let x: Vec<u32> = vec![1, 2, 3];
+
+```
+
+```rust 3:10 title="Macros!" subtitle="See them from the eyes of the user"
+
+let x: Vec<u32> = vec![1, 2, 3];
+
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
+
+```
+
+```rust 3:10 title="Macros!" subtitle="See them from the eyes of the user"
+
+let x: Vec<u32> = vec![1, 2, 3];
+
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
 
 ```
 
 </CodeSurfer>
 
+
+---
+
+<CodeSurferColumns theme={github}>
+
+
+<Step title="Macros!" subtitle="Expand the expansion">
+
+
+```rust
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
+```
+
+```rust
+macro_rules! vec {
+( $( $x:expr ),* ) => {
+    {
+        let mut temp_vec = Vec::new();
+        $(
+            temp_vec.push($x);
+        )*
+        temp_vec
+    }
+};
+}
+
+```
+
+</Step>
+
+
+<Step title="Macros!" subtitle="Expand the expansion">
+
+
+```rust
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
+```
+
+```rust 1
+macro_rules! vec { // fn vec! ( input )
+( $( $x:expr ),* ) => {
+    {
+        let mut temp_vec = Vec::new();
+        $(
+            temp_vec.push($x);
+        )*
+        temp_vec
+    }
+};
+}
+```
+
+</Step>
+
+
+<Step title="Macros!" subtitle="Expand the expansion">
+
+
+```rust
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
+```
+
+```rust 2
+macro_rules! vec {
+( $( $x:expr ),* ) => { // catch ast inside the input
+    {
+        let mut temp_vec = Vec::new();
+        $(
+            temp_vec.push($x);
+        )*
+        temp_vec
+    }
+};
+}
+```
+
+</Step>
+
+
+<Step title="Macros!" subtitle="Expand the expansion">
+
+
+```rust
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
+```
+
+```rust 2,5:7
+macro_rules! vec {
+( $( $x:expr ),* ) => {
+    {
+        let mut temp_vec = Vec::new();
+        $(
+            temp_vec.push($x);
+        )*
+        temp_vec
+    }
+};
+}
+```
+
+</Step>
+
+
+<Step title="Macros!" subtitle="Expand the expansion">
+
+
+```rust
+let x: Vec<u32> = {
+  let mut temp_vec = Vec::new();
+  temp_vec.push(1);
+  temp_vec.push(2);
+  temp_vec.push(3);
+  temp_vec
+};
+```
+
+```rust 4,8
+macro_rules! vec {
+( $( $x:expr ),* ) => {
+    {
+        let mut temp_vec = Vec::new();
+        $(
+            temp_vec.push($x);
+        )*
+        temp_vec
+    }
+};
+}
+```
+
+</Step>
+
+
+</CodeSurferColumns>
+
+=======
+>>>>>>> 92bbf8deb198d31b126e7337f1c576fba8b47d4c
 
 ---
 
@@ -701,10 +917,10 @@ import demo_marked from "./resources/images/livedemomarked.png";
     justifyContent: "center",
   }}
 />
-
 ---
 
 # Let's start
+
 
 ---
 
