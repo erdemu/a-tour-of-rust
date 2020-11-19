@@ -20,9 +20,9 @@ We explain syntax at each example
 
 ... intro Erdem ...
 
-My name is Micha Hergarden and I am part of the SICS team at EUV source. I have a background in Software Engineering with about 20 years of experience. I came into contact with Rust at the 2015 Fosdem software conference and got to use it for my thesis in 2018.
+My name is Micha Hergarden and I am part of the SICS team at EUV source. I have a background in Software Engineering. I came into contact with Rust at the 2015 Fosdem software conference. I got to use it for my thesis in 2018.
 
-Our aim for tonight is to give you a short tour of the Rust programming language and to show in what aspects it differs from its cousins c and c++.
+Our aim for tonight is to give you a short tour of the Rust and to show in what aspects it differs from its cousins c and c++.
 
 ### NEXT SHEET ###
 
@@ -31,6 +31,7 @@ Our aim for tonight is to give you a short tour of the Rust programming language
 Will this work? The answer is: maybe. In some cases the vector will allocate new memory to enlarge and move its elements to this newly allocated block. The problem is that the reference 'ref' is then pointing into unused memory. This opens the door for segmentation faults or information leaking.
 
 ### NEXT SHEET ###
+
 The CWE website tracks common weaknesses in software development.
 
 The top 25 shows numerous issues that may arise in software where memory management is not done properly. An internal investigation at Microsoft also showed that about 70% of the security bugs found in their products are related to memory management. The Chromium project reports the same figures for their Chrome derived browser.
@@ -138,14 +139,19 @@ Rust supports a number of ways to support concurrency. Such as:
 
 A good example of the use of the linear typesystem is the channels mechanism.
 
-Channels are thread safe one way queues for multiple producer and single consumer. Channels can be synchronous or async. When a producer sends data it transfers ownership of that data to the channel. This guarantees that the producer will never modify the content after sending, thus preventing data races. A consumer can take data from the channel and gain ownership from the queue. After that the consumer is free to use the data in any way it wants.
+Channels are thread safe one way queues for multiple producer and single consumer. Channels can be synchronous or async. When a producer sends data it transfers ownership of that data to the channel.
 
-This technique is similar to unix pipes or Erlangs messaging system. If a channel is empty while trying to receive, the consumer will block. This way of transferring ownership is faster than creating copies of data to be sent over while still guaranteeing data safety. It also relieves the user from having to work with locking or shared memory.
+This guarantees that the producer will never modify the content after sending, thus preventing data races. A consumer can take data from the channel and gain ownership from the queue. After that the consumer is free to use the data in any way it wants. 
+
+Contrast this with other type systems where you either send a potentilly large copy or you send a pointer which cannot provide the guarantee of immutability. It also relieves the user from having to work with locking or shared memory.
+
+Unfortunately we cannot dive further in this topic here,but we have coding example at the end of this presentation will show an example of fork/join.
 
 ### NEXT SHEET ###
 
-Unfortunately we cannot dive further in this topic. The coding example at the end of this presentation will show an example of fork/join.
+One last word on Arcs and Mutexes. In Rust you can share immutable data between threads by means of a so called Arc (atomic reference count). This is a thread safe reference counted type, which ensures the data contained in it will not be destroyed until the counter reaches 0. 
 
-One last word on Mutexes. In Rust you can share immutable data between threads by means of a so called Arc (atomic reference count). This is a threadsafe reference counted type, which ensures the data contained in it will not be destroyed until the counter reaches 0. Rust does support a mutex type if you really do need to share mutable data.
+Rust does support a mutex type if you really do need to share mutable data.
+The advantage of this type is that is wraps a mutex around a value, so you cannot get to the data unless you have the lock. A lock is scoped and automatically unlocked. If a thread aborts, the mutex is marked as poisoned, so that other thread cannot read possibly corrupt data. 
 
-The advantage of this type is that is wraps a mutex around a value, so you cannot get to the data unless you have the lock. A lock is scoped and automatically unlocked. If a thread aborts, the mutex is marked as poisoned, so that other thread cannot read possibly corrupt data. Unfortunately, Rust cannot protect you from deadlocks and livelocks, so consider carefully before using a mutex.
+Unfortunately, Rust cannot protect you from deadlocks and livelocks, so consider carefully before using a mutex.
